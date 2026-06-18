@@ -1,12 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>000_html — satoriremixdesign</title>
-<h1>どうもテストです</h1>
-  <a href="./index.html">前のページに戻る</a>
-  <style>
-  </style>
+<meta charset="UTF-8">
+<title>Ripple</title>
+<style>
+body {
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.ripple {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #4fc3f7;
+  position: relative;
+}
+
+.ripple::before,
+.ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #4fc3f7;
+  animation: ripple 2s infinite;
+}
+
+.ripple::after {
+  animation-delay: 1s;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+</style>
 </head>
+<body>
+  <a href="./index.html">前のページに戻る</a>
+<div class="ripple"></div>
+
+</body>
 </html>
