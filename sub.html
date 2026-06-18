@@ -47,15 +47,40 @@ body {
     opacity: 0;
   }
 }
+
+.controls {
+  position: relative;
+  z-index: 1;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 16px;
+  border: none;
+  cursor: pointer;
+  background: #eee;
+  border-radius: 6px;
+}
+  
 </style>
 </head>
 <body>
 
 <div class="ripple"></div>
-
+  
+<div class="controls">
+  <button onclick="setColor('#4fc3f7')">青</button>
+  <button onclick="setColor('#ff6b6b')">赤</button>
+  <button onclick="setColor('#51cf66')">緑</button>
+  <button onclick="setColor('#ffd43b')">黄</button>
+</div>
+  
 <a href="./index.html">前のページに戻る</a>
   
 </body>
-</html>
-
+  <script>
+function setColor(color) {
+  document.documentElement.style.setProperty('--ripple-color', color);
+}
+　</script>
 </html>
