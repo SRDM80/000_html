@@ -5,21 +5,23 @@
 <title>Ripple</title>
 <style>
 body {
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* 白背景にしたいならこれを有効化 */
+  /* background: #fff; */
+
+  margin: 0;
   height: 100vh;
+  display: grid;
+  place-items: center;
 }
 
+/* 波紋コンテナ */
 .ripple {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #4fc3f7;
   position: relative;
+  width: 120px;
+  height: 120px;
 }
 
+/* 波紋そのもの */
 .ripple::before,
 .ripple::after {
   content: "";
@@ -27,6 +29,7 @@ body {
   inset: 0;
   border-radius: 50%;
   border: 2px solid #4fc3f7;
+  opacity: 0;
   animation: ripple 2s infinite;
 }
 
@@ -36,8 +39,8 @@ body {
 
 @keyframes ripple {
   0% {
-    transform: scale(1);
-    opacity: 1;
+    transform: scale(0.2);
+    opacity: 0.8;
   }
   100% {
     transform: scale(2.5);
@@ -47,8 +50,12 @@ body {
 </style>
 </head>
 <body>
-  <a href="./index.html">前のページに戻る</a>
+
 <div class="ripple"></div>
 
+<a href="./index.html">前のページに戻る</a>
+  
 </body>
+</html>
+
 </html>
