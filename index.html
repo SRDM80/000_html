@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>000_html — satoriremixdesign</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================
+       リセット & ベース
+    ===================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:        #f5f4f0;
+      --surface:   #ffffff;
+      --border:    rgba(0, 0, 0, 0.10);
+      --border-em: rgba(0, 0, 0, 0.20);
+      --text-main: #1a1a18;
+      --text-sub:  #6b6b66;
+      --text-hint: #a8a8a3;
+      --accent:    #1a1a18;
+
+      --font-mono: 'Space Mono', monospace;
+      --font-ja:   'Zen Kaku Gothic New', sans-serif;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-ja);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 3rem 1.25rem 5rem;
+    }
+
+    /* =====================
+       レイアウト
+    ===================== */
+    .site {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* =====================
+       ヘッダー
+    ===================== */
+    .header {
+      position: relative;
+      background: var(--surface);
+      border: 0.5px solid var(--border-em);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem 1.75rem;
+      overflow: hidden;
+    }
+
+    /* ノイズテクスチャ（アナログ感） */
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23888' opacity='0.07'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .header-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-hint);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-name {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .header-name-sub {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-hint);
+      letter-spacing: 0.04em;
+      margin-top: 0.3rem;
+    }
+
+    .header-manifesto {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 0.5px solid var(--border);
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+
+    .header-manifesto strong {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .header-keywords {
+      margin-top: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-hint);
+      letter-spacing: 0.06em;
+    }
+
+    /* =====================
+       セクション共通
+    ===================== */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-hint);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    /* =====================
+       works
+    ===================== */
+    .works {}
+
+    .work-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .work-item:first-of-type {
+      border-top: 0.5px solid var(--border);
+    }
+
+    .work-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-hint);
+      min-width: 22px;
+      padding-top: 2px;
+    }
+
+    .work-meta {
+      flex: 1;
+    }
+
+    .work-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .work-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .work-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px 7px;
+      color: var(--text-sub);
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    /* =====================
+       skills
+    ===================== */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+    }
+
+    .skill-name {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .skill-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .skill-fill {
+      height: 100%;
+      background: var(--text-sub);
+      border-radius: 2px;
+    }
+
+    /* =====================
+       links
+    ===================== */
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .link-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 6px 14px;
+      border: 0.5px solid var(--border-em);
+      border-radius: 100px;
+      color: var(--text-sub);
+      background: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .link-pill:hover {
+      background: var(--surface);
+      color: var(--text-main);
+    }
+
+    /* =====================
+       footer
+    ===================== */
+    .footer {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-hint);
+      line-height: 2;
+      letter-spacing: 0.05em;
+    }
+
+    /* =====================
+       モバイル
+    ===================== */
+    @media (max-width: 480px) {
+      body { padding: 2rem 1rem 4rem; }
+      .header { padding: 1.5rem 1.25rem; }
+      .header-name { font-size: 22px; }
+    }
+
+    /* =====================
+       アクセシビリティ
+    ===================== */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="site">
+
+    <!-- ==================
+         ヘッダー / 自己紹介
+    ================== -->
+    <header class="header">
+      <p class="header-tag">概念のホームページ</p>
+      <h1 class="header-name">4989</h1>
+      <p class="header-name-sub">satoriremixdesign</p>
+
+      <div class="header-manifesto">
+        <strong>明るく、健康的で、楽しいインターネットを！</strong><br>
+        アイアム・ジャパニーズ・フーテン・ナードガール
+      </div>
+      <p class="header-keywords">graffiti · installation · kawaii · remix · analog nostalgia</p>
+    </header>
+
+
+    <!-- ==================
+         works
+    ================== -->
+    <section class="works">
+      <p class="section-label">works</p>
+
+      <!-- 作品を追加するときは .work-item ブロックをコピーして増やす -->
+
+      <div class="work-item">
+        <span class="work-num">01</span>
+        <div class="work-meta">
+          <p class="work-title"><a href="https://srdm80.github.io/satoriremixdesign/" target="_blank" rel="noopener">瓶詰の楽園</a></p>
+          <p class="work-desc">personal site — GitHub Pages</p>
+        </div>
+        <span class="work-badge">HTML/CSS</span>
+      </div>
+
+
+    <!-- ==================
+         skills
+    ================== -->
+    <section>
+      <p class="section-label">skills</p>
+
+      <div class="skills-grid">
+        <!-- パーセントは width 値を変えて調整 -->
+        <div class="skill-card">
+          <p class="skill-name">HTML / CSS</p>
+          <div class="skill-bar"><div class="skill-fill" style="width: 90%"></div></div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-name">JavaScript</p>
+          <div class="skill-bar"><div class="skill-fill" style="width: 72%"></div></div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-name">Java</p>
+          <div class="skill-bar"><div class="skill-fill" style="width: 50%"></div></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================
+         links
+         href="" にURLを入れる
+    ================== -->
+    <section>
+      <p class="section-label">links</p>
+
+      <div class="links">
+        <a class="link-pill" href="https://x.com/000_html" target="_blank" rel="noopener">
+          ✕ &nbsp;@000_html
+        </a>
+        <a class="link-pill" href="https://www.tiktok.com/@000_html" target="_blank" rel="noopener">
+          ▷ &nbsp;TikTok
+        </a>
+        <a class="link-pill" href="https://www.instagram.com/000_html/" target="_blank" rel="noopener">
+          ○ &nbsp;Instagram
+        </a>
+        <a class="link-pill" href="https://000-html.hatenablog.com/" target="_blank" rel="noopener">
+          ✎ &nbsp;blog
+        </a>
+        <a class="link-pill" href="https://000-html.github.io/" target="_blank" rel="noopener">
+          ◈ &nbsp;GitHub Pages
+        </a>
+        <a class="link-pill" href="https://lit.link/000_html" target="_blank" rel="noopener">
+          ◈ &nbsp;liklink Pages
+        </a>
+      </div>
+    </section>
+
+
+    <!-- ==================
+         フッター
+    ================== -->
+    <footer class="footer">
+      &copy; 000_html — all pages are gardens<br>
+      made with love + html + occasional chaos
+    </footer>
+
+  </main>
+
+</body>
+</html>
