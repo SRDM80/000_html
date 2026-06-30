@@ -1,415 +1,334 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>000_html — satoriremixdesign</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>000_html — satoriremixdesign</title>
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet" />
 
-  <style>
-    /* =====================
-       リセット & ベース
-    ===================== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+  /* =========================================================
+     1. 変数（色・フォント・余白）— ここを変えれば全体に反映される
+  ========================================================= */
+  :root{
+    --bg:        #f5f4f0;
+    --surface:   #ffffff;
+    --border:    rgba(0,0,0,.10);
+    --border-em: rgba(0,0,0,.20);
+    --text-main: #1a1a18;
+    --text-sub:  #6b6b66;
+    --text-hint: #a8a8a3;
 
-    :root {
-      --bg:        #f5f4f0;
-      --surface:   #ffffff;
-      --border:    rgba(0, 0, 0, 0.10);
-      --border-em: rgba(0, 0, 0, 0.20);
-      --text-main: #1a1a18;
-      --text-sub:  #6b6b66;
-      --text-hint: #a8a8a3;
-      --accent:    #1a1a18;
+    --font-mono: 'Space Mono', monospace;
+    --font-ja:   'Zen Kaku Gothic New', sans-serif;
 
-      --font-mono: 'Space Mono', monospace;
-      --font-ja:   'Zen Kaku Gothic New', sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
 
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-    }
+    --gap: 1.5rem; /* セクション間の間隔 */
+  }
 
-    html {
-      background: var(--bg);
-      color: var(--text-main);
-      font-family: var(--font-ja);
-      font-size: 16px;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-    }
+  *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 3rem 1.25rem 5rem;
-    }
+  html{
+    background:var(--bg);
+    color:var(--text-main);
+    font-family:var(--font-ja);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
 
-    /* =====================
-       レイアウト
-    ===================== */
-    .site {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
+  body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:3rem 1.25rem 5rem;
+  }
 
-    /* =====================
-       ヘッダー
-    ===================== */
-    .header {
-      position: relative;
-      background: var(--surface);
-      border: 0.5px solid var(--border-em);
-      border-radius: var(--radius-lg);
-      padding: 2rem 1.75rem 1.75rem;
-      overflow: hidden;
-    }
+  .site{
+    width:100%;
+    max-width:600px;
+    display:flex;
+    flex-direction:column;
+    gap:var(--gap);
+  }
 
-    /* ノイズテクスチャ（アナログ感） */
-    .header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23888' opacity='0.07'/%3E%3C/svg%3E");
-      pointer-events: none;
-    }
+  /* =========================================================
+     2. 共通パーツ（カード・ラベル・モノフォント）
+     → 新しいセクションを足すときはこれらのクラスを使い回す
+  ========================================================= */
+  .card{
+    background:var(--surface);
+    border:.5px solid var(--border-em);
+    border-radius:var(--radius-lg);
+  }
 
-    .header-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-hint);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.75rem;
-    }
+  .label{ /* セクション見出し（works / skills / links など） */
+    font-family:var(--font-mono);
+    font-size:10px;
+    color:var(--text-hint);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:.75rem;
+  }
 
-    .header-name {
-      font-family: var(--font-mono);
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-    }
+  .mono{ font-family:var(--font-mono); }
 
-    .header-name-sub {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-style: italic;
-      color: var(--text-hint);
-      letter-spacing: 0.04em;
-      margin-top: 0.3rem;
-    }
+  /* =========================================================
+     3. ヘッダー
+  ========================================================= */
+  .header{
+    position:relative;
+    padding:2rem 1.75rem 1.75rem;
+    overflow:hidden;
+  }
 
-    .header-manifesto {
-      margin-top: 1.25rem;
-      padding-top: 1.25rem;
-      border-top: 0.5px solid var(--border);
-      font-size: 13px;
-      color: var(--text-sub);
-      line-height: 1.8;
-    }
+  .header::before{ /* ノイズテクスチャ */
+    content:'';
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='%23888' opacity='0.07'/%3E%3C/svg%3E");
+    pointer-events:none;
+  }
 
-    .header-manifesto strong {
-      color: var(--text-main);
-      font-weight: 500;
-    }
+  .header-tag{
+    font-size:11px; color:var(--text-hint);
+    letter-spacing:.08em; margin-bottom:.75rem;
+  }
 
-    .header-keywords {
-      margin-top: 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-hint);
-      letter-spacing: 0.06em;
-    }
+  .header-name{
+    font-size:26px; font-weight:400;
+    letter-spacing:-.02em; line-height:1.15;
+  }
 
-    /* =====================
-       セクション共通
-    ===================== */
-    .section-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-hint);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
+  .header-name-sub{
+    font-size:13px; font-style:italic;
+    color:var(--text-hint); letter-spacing:.04em;
+    margin-top:.3rem;
+  }
 
-    /* =====================
-       works
-    ===================== */
-    .works {}
+  .header-manifesto{
+    margin-top:1.25rem; padding-top:1.25rem;
+    border-top:.5px solid var(--border);
+    font-size:13px; color:var(--text-sub); line-height:1.8;
+  }
 
-    .work-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1rem 0;
-      border-bottom: 0.5px solid var(--border);
-    }
+  .header-manifesto strong{ color:var(--text-main); font-weight:500; }
 
-    .work-item:first-of-type {
-      border-top: 0.5px solid var(--border);
-    }
+  .header-keywords{
+    margin-top:.6rem; font-size:10px;
+    color:var(--text-hint); letter-spacing:.06em;
+  }
 
-    .work-num {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-hint);
-      min-width: 22px;
-      padding-top: 2px;
-    }
+  /* =========================================================
+     4. works — 1作品 = .work-item を1ブロックコピーして追加
+  ========================================================= */
+  .work-list{ border-top:.5px solid var(--border); }
 
-    .work-meta {
-      flex: 1;
-    }
+  .work-item{
+    display:flex; align-items:flex-start; gap:1rem;
+    padding:1rem 0;
+    border-bottom:.5px solid var(--border);
+  }
 
-    .work-title {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 3px;
-    }
+  .work-num{
+    font-size:11px; color:var(--text-hint);
+    min-width:22px; padding-top:2px;
+  }
 
-    .work-desc {
-      font-size: 12px;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
+  .work-meta{ flex:1; }
 
-    .work-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 3px 7px;
-      color: var(--text-sub);
-      white-space: nowrap;
-      align-self: center;
-    }
+  .work-title{ font-size:14px; font-weight:500; margin-bottom:3px; }
+  .work-title a{ color:inherit; text-decoration:none; }
+  .work-title a:hover{ text-decoration:underline; }
 
-    /* =====================
-       skills
-    ===================== */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px;
-    }
+  .work-desc{ font-size:12px; color:var(--text-sub); }
 
-    .skill-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
-    }
+  .work-badge{
+    font-size:10px;
+    background:var(--bg);
+    border:.5px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:3px 7px;
+    color:var(--text-sub);
+    white-space:nowrap;
+    align-self:center;
+  }
 
-    .skill-name {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 400;
-      margin-bottom: 8px;
-    }
+  /* =========================================================
+     5. skills — 1項目 = .skill-card を1ブロックコピーして追加
+        width:〇% を変えるだけで習熟度バーが変わる
+  ========================================================= */
+  .skills-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(130px,1fr));
+    gap:8px;
+  }
 
-    .skill-bar {
-      height: 2px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-    }
+  .skill-card{
+    background:var(--surface);
+    border:.5px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:.75rem 1rem;
+  }
 
-    .skill-fill {
-      height: 100%;
-      background: var(--text-sub);
-      border-radius: 2px;
-    }
+  .skill-name{ font-size:11px; margin-bottom:8px; }
 
-    /* =====================
-       links
-    ===================== */
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  .skill-bar{
+    height:2px; background:var(--border);
+    border-radius:2px; overflow:hidden;
+  }
 
-    .link-pill {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 6px 14px;
-      border: 0.5px solid var(--border-em);
-      border-radius: 100px;
-      color: var(--text-sub);
-      background: transparent;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, color 0.15s;
-    }
+  .skill-fill{
+    height:100%; background:var(--text-sub); border-radius:2px;
+  }
 
-    .link-pill:hover {
-      background: var(--surface);
-      color: var(--text-main);
-    }
+  /* =========================================================
+     6. links — 1項目 = .link-pill を1ブロックコピーして追加
+  ========================================================= */
+  .links{ display:flex; flex-wrap:wrap; gap:8px; }
 
-    /* =====================
-       footer
-    ===================== */
-    .footer {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-hint);
-      line-height: 2;
-      letter-spacing: 0.05em;
-    }
+  .link-pill{
+    font-size:11px;
+    padding:6px 14px;
+    border:.5px solid var(--border-em);
+    border-radius:100px;
+    color:var(--text-sub);
+    background:transparent;
+    text-decoration:none;
+    display:flex; align-items:center; gap:6px;
+    transition:background .15s, color .15s;
+  }
 
-    /* =====================
-       モバイル
-    ===================== */
-    @media (max-width: 480px) {
-      body { padding: 2rem 1rem 4rem; }
-      .header { padding: 1.5rem 1.25rem; }
-      .header-name { font-size: 22px; }
-    }
+  .link-pill:hover{ background:var(--surface); color:var(--text-main); }
 
-    /* =====================
-       アクセシビリティ
-    ===================== */
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
-    }
-  </style>
+  /* =========================================================
+     7. フッター
+  ========================================================= */
+  .footer{
+    font-size:10px; color:var(--text-hint);
+    line-height:2; letter-spacing:.05em;
+  }
+
+  /* =========================================================
+     8. レスポンシブ / アクセシビリティ
+  ========================================================= */
+  @media (max-width:480px){
+    body{ padding:2rem 1rem 4rem; }
+    .header{ padding:1.5rem 1.25rem; }
+    .header-name{ font-size:22px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ transition:none !important; }
+  }
+</style>
 </head>
 <body>
 
-  <main class="site">
+<main class="site">
 
-    <!-- ==================
-         ヘッダー / 自己紹介
-    ================== -->
-    <header class="header">
-      <p class="header-tag">概念のホームページ</p>
-      <h1 class="header-name">4989</h1>
-      <p class="header-name-sub">satoriremixdesign</p>
+  <!-- ============== ヘッダー / 自己紹介 ============== -->
+  <header class="header card mono">
+    <p class="header-tag">概念のホームページ</p>
+    <h1 class="header-name">4989</h1>
+    <p class="header-name-sub">satoriremixdesign</p>
 
-      <div class="header-manifesto">
-        <strong>明るく、健康的で、楽しいインターネットを！</strong><br>
-        アイアム・ジャパニーズ・フーテン・ナードガール
-      </div>
-      <p class="header-keywords">graffiti · installation · kawaii · remix · analog nostalgia</p>
-    </header>
+    <div class="header-manifesto">
+      <strong>明るく、健康的で、楽しいインターネットを！</strong><br>
+      アイアム・ジャパニーズ・フーテン・ナードガール
+    </div>
+    <p class="header-keywords">graffiti · installation · kawaii · remix · analog nostalgia</p>
+  </header>
 
 
-    <!-- ==================
-         works
-    ================== -->
-    <section class="works">
-      <p class="section-label">works</p>
+  <!-- ============== works ==============
+       追加するときは .work-item ブロックをコピーして
+       work-list の中に増やすだけでOK
+  ===================================== -->
+  <section>
+    <p class="label">works</p>
 
-      <!-- 作品を追加するときは .work-item ブロックをコピーして増やす -->
-
+    <div class="work-list">
       <div class="work-item">
-        <span class="work-num">00</span>
+        <span class="work-num mono">00</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/satoriremixdesign/" target="_blank" rel="noopener">瓶詰の楽園</a></p>
-          <p class="work-desc"> site 0 — GitHub Pages</p>
+          <p class="work-desc">site 0 — GitHub Pages</p>
         </div>
-        <span class="work-badge">HTML/CSS</span>
+        <span class="work-badge mono">HTML/CSS</span>
       </div>
 
-       <div class="work-item">
-        <span class="work-num">01</span>
+      <div class="work-item">
+        <span class="work-num mono">01</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/000_html/sub.html" target="_blank" rel="noopener">こころ安らかなり</a></p>
-          <p class="work-desc"> site 1 — GitHub Pages</p>
+          <p class="work-desc">site 1 — GitHub Pages</p>
         </div>
-        <span class="work-badge">HTML/CSS</span>
+        <span class="work-badge mono">HTML/CSS</span>
       </div>
-      
-  　　　<div class="work-item">
-        <span class="work-num">02</span>
+
+      <div class="work-item">
+        <span class="work-num mono">02</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/000_html/sub2.html" target="_blank" rel="noopener">反戦</a></p>
-          <p class="work-desc"> site 2 — GitHub Pages</p>
+          <p class="work-desc">site 2 — GitHub Pages</p>
         </div>
-        <span class="work-badge">mp4</span>
+        <span class="work-badge mono">mp4</span>
       </div>
-      
+    </div>
+  </section>
 
 
-    <!-- ==================
-         skills
-    ================== -->
-    <section>
-      <p class="section-label">skills</p>
+  <!-- ============== skills ==============
+       width:〇% を変えるだけで習熟度バーが変わる
+  ===================================== -->
+  <section>
+    <p class="label">skills</p>
 
-      <div class="skills-grid">
-        <!-- パーセントは width 値を変えて調整 -->
-        <div class="skill-card">
-          <p class="skill-name">HTML / CSS</p>
-          <div class="skill-bar"><div class="skill-fill" style="width: 60%"></div></div>
-        </div>
-        <div class="skill-card">
-          <p class="skill-name">JavaScript</p>
-          <div class="skill-bar"><div class="skill-fill" style="width: 20%"></div></div>
-        </div>
-        <div class="skill-card">
-          <p class="skill-name">Java</p>
-          <div class="skill-bar"><div class="skill-fill" style="width: 50%"></div></div>
-        </div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <p class="skill-name mono">HTML / CSS</p>
+        <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
       </div>
-    </section>
-
-
-    <!-- ==================
-         links
-         href="" にURLを入れる
-    ================== -->
-    <section>
-      <p class="section-label">links</p>
-
-      <div class="links">
-        <a class="link-pill" href="https://x.com/000_html" target="_blank" rel="noopener">
-          ✕ &nbsp;X
-        </a>
-        <a class="link-pill" href="https://www.tiktok.com/@000_html" target="_blank" rel="noopener">
-          ▷ &nbsp;TikTok
-        </a>
-        <a class="link-pill" href="https://www.instagram.com/000_html/" target="_blank" rel="noopener">
-          ○ &nbsp;Instagram
-        </a>
-        <a class="link-pill" href="https://satoriremixdesign.hatenablog.com/" target="_blank" rel="noopener">
-          ✎ &nbsp;hatena blog
-        </a>
-        <a class="link-pill" href="https://github.com/SRDM80" target="_blank" rel="noopener">
-          ◈ &nbsp;GitHub Pages
-        </a>
-        <a class="link-pill" href="https://lit.link/000_html" target="_blank" rel="noopener">
-          ◈ &nbsp;liklink Pages
-        </a>
+      <div class="skill-card">
+        <p class="skill-name mono">JavaScript</p>
+        <div class="skill-bar"><div class="skill-fill" style="width:20%"></div></div>
       </div>
-    </section>
+      <div class="skill-card">
+        <p class="skill-name mono">Java</p>
+        <div class="skill-bar"><div class="skill-fill" style="width:50%"></div></div>
+      </div>
+    </div>
+  </section>
 
 
-    <!-- ==================
-         フッター
-    ================== -->
-    <footer class="footer">
-      &copy; 000_html — 概念 2026<br>
-    </footer>
+  <!-- ============== links ==============
+       href="" にURLを入れる。増やすときは .link-pill をコピー
+  ===================================== -->
+  <section>
+    <p class="label">links</p>
 
-  </main>
+    <div class="links">
+      <a class="link-pill mono" href="https://x.com/000_html" target="_blank" rel="noopener">✕ &nbsp;X</a>
+      <a class="link-pill mono" href="https://www.tiktok.com/@000_html" target="_blank" rel="noopener">▷ &nbsp;TikTok</a>
+      <a class="link-pill mono" href="https://www.instagram.com/000_html/" target="_blank" rel="noopener">○ &nbsp;Instagram</a>
+      <a class="link-pill mono" href="https://satoriremixdesign.hatenablog.com/" target="_blank" rel="noopener">✎ &nbsp;hatena blog</a>
+      <a class="link-pill mono" href="https://github.com/SRDM80" target="_blank" rel="noopener">◈ &nbsp;GitHub Pages</a>
+      <a class="link-pill mono" href="https://lit.link/000_html" target="_blank" rel="noopener">◈ &nbsp;liklink Pages</a>
+    </div>
+  </section>
+
+
+  <!-- ============== フッター ============== -->
+  <footer class="footer mono">
+    &copy; 000_html — 概念 2026<br>
+  </footer>
+
+</main>
 
 </body>
 </html>
