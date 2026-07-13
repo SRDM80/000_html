@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✴︎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ===== ここの色を変えるだけで雰囲気が変わります ===== */
+    --bg1: #ffe3f1;   /* 背景グラデーション上 */
+    --bg2: #e3f0ff;   /* 背景グラデーション下 */
+    --text-color: #a97ca0;
+    --star-colors: #ffb6d9, #c9b6ff, #b6e3ff, #b6ffd9, #fff3b6, #ffd6b6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #ffffff;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(-30px) translateX(20px); }
+  }
+  
+  .title {
+    position: fixed;
+    top: 24px;
+    width: 100%;
+    text-align: center;
+    color: var(--text-color);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  /* 星本体 */
+  .star {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .star svg {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+  <div class="title">✧ クリック ✧</div>
+<script>
+  // ===== 設定項目(ここを変えるとカスタマイズできます) =====
+  const STAR_COLORS = ["#ffb6d9", "#c9b6ff", "#b6e3ff", "#b6ffd9", "#fff3b6", "#ffd6b6"];
+  const STARS_PER_CLICK = 1;      // 1クリックで出る星の数
+  const STAR_LIFETIME = 2000;     // 星が消えるまでの時間(ms)
+  const MIN_SIZE = 18;
+  const MAX_SIZE = 48;
+  const SPREAD = 60;              // クリック位置からのばらけ具合(px)
+
+  function starSVG(color, size) {
+    // シンプルな五角形の星をSVGで描画
+    return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+      <path d="M50 3 L61 37 L98 37 L68 59 L79 95 L50 73 L21 95 L32 59 L2 37 L39 37 Z"
+        fill="${color}" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  function createStar(x, y) {
+    const el = document.createElement('div');
+    el.className = 'star';
+
+    const color = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+    const size = MIN_SIZE + Math.random() * (MAX_SIZE - MIN_SIZE);
+    const offsetX = (Math.random() - 0.5) * SPREAD;
+    const offsetY = (Math.random() - 0.5) * SPREAD;
+    const rotate = (Math.random() - 0.5) * 180;
+    const driftY = -40 - Math.random() * 60; // ふわっと上に浮く量
+
+    el.innerHTML = starSVG(color, size);
+    el.style.left = (x + offsetX - size / 2) + 'px';
+    el.style.top = (y + offsetY - size / 2) + 'px';
+    el.style.opacity = '0';
+    el.style.transform = `translateY(0px) rotate(0deg) scale(0.3)`;
+    el.style.transition = `all ${STAR_LIFETIME}ms cubic-bezier(0.2, 0.8, 0.3, 1)`;
+
+    document.body.appendChild(el);
+
+    // 次のフレームでアニメーション開始(ふわっと出てふわっと消える)
+    requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = `translateY(-20px) rotate(${rotate}deg) scale(1)`;
+    });
+
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = `translateY(${driftY}px) rotate(${rotate * 1.5}deg) scale(0.6)`;
+    }, STAR_LIFETIME * 0.3);
+
+    setTimeout(() => {
+      el.remove();
+    }, STAR_LIFETIME + 300);
+  }
+
+  function handleClick(x, y) {
+    for (let i = 0; i < STARS_PER_CLICK; i++) {
+      setTimeout(() => createStar(x, y), i * 40);
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    handleClick(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    handleClick(touch.clientX, touch.clientY);
+  }, { passive: true });
+</script>
+
+</body>
+</html>
