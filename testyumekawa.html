@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> 4 9 8 9 </title>
+
+<script>
+		//ここにJavaScriptのコードを記述
+    console.log("Hello, World!");
+</script>
+
+<style>
+/* ==========================================================
+   ★ カスタマイズはまずここ！ ★
+   色・フォント・文字サイズは、すべてこの :root の中にまとめてあります。
+   ここの値を書き換えるだけで、サイト全体に反映されます。
+   ========================================================== */
+:root {
+  /* ---------- 色 ---------- */
+  --color-bg:          #f6cdcd;  /* ページ全体の背景色 ドリーミーブルー*/
+  --color-box-bg:      #f6cdcd;  /* 各ボックスの背景色 */
+  --color-text:        #d18d8d;  /* 本文の文字色 ミルキーピンク*/
+  --color-main:        #d7afeb;  /* メインカラー（見出しの帯・枠線） */
+  --color-sub:         #e3e6d8;  /* サブカラー（表の左列の背景など） */
+  --color-header-text: #d67d7b;  /* 見出しの帯の文字色 */
+  --color-link:        #946a9f;  /* リンクの色 */
+
+  /* ---------- フォントファミリー ---------- */
+  --font-body:    "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;  /* 本文 */
+  --font-heading: "Hiragino Maru Gothic ProN", "Meiryo", sans-serif;  /* 見出し・タイトル */
+
+  /* ---------- 文字サイズ ---------- */
+  --size-title:   28px;  /* サイトのタイトル */
+  --size-heading: 18px;  /* 各セクションの見出し */
+  --size-body:    15px;  /* 本文 */
+  --size-small:   12px;  /* フッターなど小さい文字 */
+
+  /* ---------- そのほか ---------- */
+  --box-width:  600px;   /* サイト全体の横幅 */
+  --radius:     12px;    /* 角の丸さ（0pxで四角になる） */
+}
+
+/* ==========================================================
+   ここから下は「見た目の設計」部分。
+   色やサイズは上の変数を使っているので、基本さわらなくてOK。
+   ========================================================== */
+
+/* ページ全体 */
+body {
+  background: linear-gradient(135deg, #f6cdcd, #f8def5);
+  min-height: 100vh;
+}
+
+/* サイト全体を囲む箱（中央寄せ） */
+.container {
+  max-width: var(--box-width);
+  margin: 0 auto;
+}
+
+/* ---------- タイトル ---------- */
+.site-title {
+  font-family: var(--font-heading);
+  font-size: var(--size-title);
+  color: var(--color-main);
+  text-align: center;
+  margin: 10px 0 20px;
+}
+
+/* ---------- 各セクションの箱 ---------- */
+.box {
+  background: rgb(255 255 255 / 0.35);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.6);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.08);
+}
+
+/* セクションの見出し（色つきの帯） */
+.box h2 {
+  background-color: var(--color-main);
+  color: var(--color-header-text);
+  font-family: var(--font-heading);
+  font-size: var(--size-heading);
+  margin: 0;
+  padding: 8px 16px;
+}
+
+/* セクションの中身 */
+.box .content {
+  padding: 16px;
+}
+
+/* ---------- プロフィール表 ---------- */
+table.profile {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.profile th,
+table.profile td {
+  border: 1px solid var(--color-main);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+/* 表の左列（項目名） */
+table.profile th {
+  background-color: var(--color-sub);
+  width: 30%;
+  white-space: nowrap;
+}
+
+/* ---------- アイコン画像 ---------- */
+.icon {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 12px;
+  border-radius: 50%;           /* 丸く切り抜く（四角にしたいなら 0 ） */
+  border: 3px solid var(--color-main);
+  object-fit: cover;
+  background-color: var(--color-sub);
+}
+
+/* ---------- 箇条書き ---------- */
+ul.list {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+/* ---------- リンク ---------- */
+a {
+  color: var(--color-link);
+}
+
+/* ---------- フッター ---------- */
+.footer {
+  text-align: center;
+  font-size: var(--size-small);
+  color: var(--color-main);
+}
+
+/* ==========================================================
+   ★ カスタマイズはここ！ ★
+   ========================================================== */
+:root {
+  --color-bg:    #f8def5;  /* 背景色（花びらの塗りも同じ色になります） */
+  --color-line:  #b394be;  /* 線の色 */
+  --line-width:  2;        /* 線の太さ（数字だけ。1〜4くらいがおすすめ） */
+  --flower-size: 420px;    /* 紋の大きさ（最大） */
+  --draw-time:   4s;       /* 線が描かれるまでの時間（0sで即表示） */
+}
+ 
+/* ページ全体：紋を画面の真ん中に置く */
+body {
+  background-color: var(--color-bg);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+/* SVG（紋）全体の設定 */
+.flower {
+  width: min(80vw, var(--flower-size));
+  height: auto;
+}
+ 
+/* すべての線に共通する設定 */
+.flower * {
+  fill: var(--color-bg);          /* 塗り（背景色にして、重なった線を隠す） */
+  stroke: var(--color-line);      /* 線の色 */
+  stroke-width: var(--line-width);
+  stroke-linecap: round;          /* 線の端を丸く */
+  stroke-linejoin: round;         /* 線の角を丸く */
+ 
+  /* 線が描かれていくアニメーション（不要なら下の3行を消す） */
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+  animation: draw var(--draw-time) ease forwards;
+}
+ 
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+ 
+/* 動きが苦手な人向け：アニメーションを止めて最初から表示 */
+@media (prefers-reduced-motion: reduce) {
+  .flower * { animation: none; stroke-dashoffset: 0; }
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- ===== タイトル ===== -->
+  <h1 class="site-title"> 4 9 8 9 </h1>
+
+  <!-- ===== プロフィール ===== -->
+  <!-- 紋の中心が (0,0) になるように、-100〜100 の範囲で描いています -->
+<svg class="flower" viewBox="-100 -100 200 200" role="img" aria-label="花の紋">
+ 
+  <!-- ===== 部品の定義（ここで形を作って、下で並べます） ===== -->
+  <defs>
+    <!-- 表の花びら：先端に切れ込みのある桜の花びら -->
+    <g id="petal">
+      <path d="M 0 -12 C -22 -30, -26 -58, -10 -70 L 0 -62 L 10 -70 C 26 -58, 22 -30, 0 -12 Z"/>
+      <path d="M 0 -22 L 0 -52"/>  <!-- 花びらの中の筋 -->
+    </g>
+ 
+    <!-- 奥の葉：花びらの間からのぞく細い葉 -->
+    <path id="leaf" d="M 0 -30 C -8 -50, -6 -80, 0 -88 C 6 -80, 8 -50, 0 -30 Z"/>
+ 
+    <!-- 蕊（しべ）：線の先に小さな丸 -->
+    <g id="stamen">
+      <path d="M 0 -8 L 0 -22"/>
+      <circle cx="0" cy="-26" r="3"/>
+    </g>
+  </defs>
+ 
+  <!-- ===== 外側の二重の輪 ===== -->
+  <circle cx="0" cy="0" r="96"/>
+  <circle cx="0" cy="0" r="91"/>
+ 
+  <!-- ===== 奥の葉（5枚・花びらの間に配置） ===== -->
+  <use href="#leaf" transform="rotate(36)"/>
+  <use href="#leaf" transform="rotate(108)"/>
+  <use href="#leaf" transform="rotate(180)"/>
+  <use href="#leaf" transform="rotate(252)"/>
+  <use href="#leaf" transform="rotate(324)"/>
+ 
+  <!-- ===== 手前の花びら（5枚・72度ずつ回転） ===== -->
+  <use href="#petal" transform="rotate(0)"/>
+  <use href="#petal" transform="rotate(72)"/>
+  <use href="#petal" transform="rotate(144)"/>
+  <use href="#petal" transform="rotate(216)"/>
+  <use href="#petal" transform="rotate(288)"/>
+ 
+  <!-- ===== 中心の花芯と蕊 ===== -->
+  <use href="#stamen" transform="rotate(0)"/>
+  <use href="#stamen" transform="rotate(72)"/>
+  <use href="#stamen" transform="rotate(144)"/>
+  <use href="#stamen" transform="rotate(216)"/>
+  <use href="#stamen" transform="rotate(288)"/>
+  <circle cx="0" cy="0" r="7"/>
+ 
+</svg>
+  <!-- ===== フッター ===== -->
+  <p class="footer">© 2026 宮尾 All Rights Reserved.</p>
+
+</div>
+</body>
+</html>
