@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="ランダムなカラーコードと、その色の雰囲気に合う楽曲を1曲紹介するページ。色名・HEX・RGB・HSLと、相性のいい配色も一緒に引けます。" />
+    <link rel="icon" href="data:," />
+    <title>カラーコードと楽曲の紹介（公開用）</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #faf6ef;
+        --surface: #fffdf8;
+        --text: #1c1917;
+        --dim: #78716c;
+        --border: #e7ded0;
+        --accent: #b08d57;
+        --spotify: #1db954;
+        --danger: #b91c1c;
+        --radius: 14px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #16130e;
+          --surface: #221d16;
+          --text: #f3ede2;
+          --dim: #a89f8f;
+          --border: #38312a;
+          --accent: #c9a45c;
+          --danger: #f87171;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+        line-height: 1.6;
+      }
+      .serif {
+        font-family: "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Yu Mincho",
+          "YuMincho", "Noto Serif JP", serif;
+      }
+      .mono {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      button, a.btn, select, summary { min-height: 2.75rem; }
+      button { font: inherit; cursor: pointer; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+      /* ---------- Color field ---------- */
+      .field {
+        padding: max(1.25rem, env(safe-area-inset-top)) 1.25rem 2rem;
+        transition: background-color 0.7s ease, color 0.7s ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .field { transition: none; }
+      }
+      .field-inner {
+        max-width: 44rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 78vh;
+      }
+      .field-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-top: 0.5rem;
+      }
+      .brand {
+        font-size: 0.75rem;
+        letter-spacing: 0.32em;
+        margin: 0;
+      }
+      .pool-note { font-size: 0.75rem; margin: 0; white-space: nowrap; }
+
+      .mood-filter { margin-top: 1.5rem; }
+      .mood-filter p { font-size: 0.75rem; margin: 0 0 0.5rem; letter-spacing: 0.08em; }
+      .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+      .chip {
+        border: 1px solid currentColor;
+        background: transparent;
+        color: inherit;
+        border-radius: 999px;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.85rem;
+        min-height: 2.5rem;
+        opacity: 0.85;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--chip-bg, #1c1917);
+        color: var(--chip-fg, #fdfaf3);
+        border-color: transparent;
+        opacity: 1;
+        font-weight: 600;
+      }
+
+      .combo { margin-top: 2.75rem; }
+      .mood-label { font-size: 0.9rem; letter-spacing: 0.18em; margin: 0; }
+      .color-name {
+        font-size: clamp(2.6rem, 9vw, 4.2rem);
+        line-height: 1.15;
+        margin: 0.4rem 0 0;
+        font-weight: 600;
+      }
+      .hex {
+        font-size: clamp(2rem, 8vw, 3.2rem);
+        letter-spacing: 0.04em;
+        margin: 1.1rem 0 0;
+        line-height: 1.1;
+      }
+      .codes { font-size: 0.85rem; margin: 0.45rem 0 0; }
+      .vibe { font-size: 1rem; margin: 1rem 0 0; }
+
+      .track-card {
+        margin-top: 1.75rem;
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius);
+        padding: 1.15rem 1.25rem 1.25rem;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+      }
+      .track-row { display: flex; gap: 0.8rem; align-items: flex-start; }
+      .track-row svg { width: 1.5rem; height: 1.5rem; flex: none; margin-top: 0.2rem; color: var(--accent); }
+      .track-title { font-size: 1.15rem; font-weight: 600; line-height: 1.45; margin: 0; overflow-wrap: anywhere; }
+      .explicit {
+        font-size: 0.7rem; color: var(--dim); border: 1px solid var(--border);
+        border-radius: 4px; padding: 0 0.3rem; margin-left: 0.45rem; vertical-align: middle;
+        white-space: nowrap;
+      }
+      .track-artist { font-size: 0.9rem; color: var(--dim); margin: 0.25rem 0 0; overflow-wrap: anywhere; }
+      .track-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        border-radius: 999px; padding: 0.55rem 1.1rem;
+        font-size: 0.9rem; text-decoration: none; border: 1px solid transparent;
+        background: transparent; color: inherit;
+      }
+      .btn-spotify { background: var(--spotify); color: #fff; font-weight: 600; }
+      .btn-outline { border-color: var(--border); color: var(--text); background: var(--surface); }
+      .btn-outline[disabled] { opacity: 0.55; cursor: default; }
+      .btn svg { width: 1rem; height: 1rem; }
+
+      .field-actions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; }
+      .btn-draw {
+        border: none; border-radius: 999px; padding: 0.7rem 1.6rem;
+        font-size: 1rem; font-weight: 600;
+      }
+      .btn-ghost {
+        border: 1px solid currentColor; border-radius: 999px;
+        background: transparent; color: inherit; padding: 0.6rem 1.15rem; font-size: 0.9rem;
+      }
+      .copy-note { font-size: 0.8rem; margin: 0.6rem 0 0; min-height: 1.2em; }
+
+      .harmony { margin-top: 2rem; }
+      .harmony h2 { font-size: 0.8rem; letter-spacing: 0.14em; margin: 0 0 0.6rem; font-weight: 600; }
+      .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+      .swatch {
+        border: 1px solid rgba(127, 127, 127, 0.35);
+        border-radius: 10px; padding: 0; overflow: hidden; text-align: left;
+        background: transparent; color: inherit; min-height: 0;
+      }
+      .swatch-color { display: block; height: 3rem; }
+      .swatch-meta { display: block; padding: 0.45rem 0.6rem 0.55rem; background: var(--surface); color: var(--text); }
+      .swatch-role { display: block; font-size: 0.72rem; color: var(--dim); }
+      .swatch-hex { display: block; font-size: 0.85rem; margin-top: 0.1rem; }
+
+      .history { margin-top: 1.75rem; }
+      .history h2 { font-size: 0.8rem; letter-spacing: 0.14em; margin: 0 0 0.6rem; font-weight: 600; }
+      .history-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .history-dot {
+        width: 2.75rem; height: 2.75rem; border-radius: 999px; padding: 0;
+        border: 2px solid rgba(255, 255, 255, 0.55);
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+      }
+      .history-dot[aria-current="true"] { border-color: currentColor; }
+      .history-empty { font-size: 0.85rem; margin: 0; }
+
+      /* ---------- Below the fold ---------- */
+      .below { padding: 2.25rem 1.25rem 3rem; }
+      .below-inner { max-width: 44rem; margin: 0 auto; }
+      .section-head {
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+      }
+      .section-head h2 { font-size: 1.55rem; margin: 0; font-weight: 600; }
+      .section-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .btn-plain {
+        border: 1px solid var(--border); background: var(--surface); color: var(--text);
+        border-radius: 999px; padding: 0.55rem 1.05rem; font-size: 0.88rem;
+      }
+      .btn-plain[disabled] { opacity: 0.5; cursor: default; }
+      .section-note { font-size: 0.82rem; color: var(--dim); margin: 0.6rem 0 0; }
+      .empty { font-size: 0.92rem; color: var(--dim); margin: 1.4rem 0 0; line-height: 1.8; }
+
+      .fav-list { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; gap: 1rem; }
+      .fav {
+        border: 1px solid var(--border); border-radius: var(--radius);
+        background: var(--surface); overflow: hidden;
+      }
+      .fav-band {
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+        padding: 1.6rem 1.1rem 0.7rem;
+      }
+      .fav-name { font-size: 1.3rem; margin: 0; line-height: 1.3; }
+      .fav-hex { font-size: 1rem; margin: 0; white-space: nowrap; }
+      .fav-body { padding: 0.8rem 1.1rem 1.1rem; }
+      .fav-mood { font-size: 0.78rem; color: var(--dim); margin: 0; letter-spacing: 0.06em; }
+      .fav-track { font-size: 1rem; font-weight: 600; margin: 0.35rem 0 0; line-height: 1.5; overflow-wrap: anywhere; }
+      .fav-artist { font-size: 0.88rem; color: var(--dim); margin: 0.15rem 0 0; overflow-wrap: anywhere; }
+      .fav-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; align-items: center; }
+      .btn-small { min-height: 2.5rem; padding: 0.4rem 0.95rem; font-size: 0.82rem; }
+      .btn-danger { background: var(--danger); color: #fff; border-color: transparent; font-weight: 600; }
+      @media (prefers-color-scheme: dark) { .btn-danger { color: #1c1917; } }
+
+      .moods { margin-top: 3rem; }
+      .moods h2 { font-size: 1.55rem; margin: 0; font-weight: 600; }
+      .moods > p { font-size: 0.9rem; color: var(--dim); margin: 0.6rem 0 0; }
+      .mood-grid {
+        list-style: none; margin: 1.3rem 0 0; padding: 0;
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem;
+      }
+      @media (min-width: 40rem) { .mood-grid { grid-template-columns: repeat(4, 1fr); } }
+      .mood-cell {
+        width: 100%; text-align: left; border: 1px solid var(--border); border-radius: var(--radius);
+        background: var(--surface); color: var(--text); padding: 0.9rem 1rem 1rem; min-height: 0;
+      }
+      .mood-cell .m-label { font-size: 0.98rem; font-weight: 600; display: block; }
+      .mood-cell .m-vibe { font-size: 0.78rem; color: var(--dim); display: block; margin-top: 0.3rem; line-height: 1.55; }
+      .mood-cell .m-count { font-size: 0.72rem; color: var(--dim); display: block; margin-top: 0.5rem; }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 1.4rem 1.25rem 2.2rem;
+        font-size: 0.78rem; color: var(--dim); text-align: center;
+      }
+      footer p { margin: 0.2rem 0; }
+    </style>
+  </head>
+  <body>
+    <!-- ===== Color field ===== -->
+    <section class="field" id="field">
+      <div class="field-inner">
+        <div class="field-head">
+          <p class="brand">COLOR × TRACK</p>
+          <p class="pool-note" id="poolNote"></p>
+        </div>
+
+        <div class="mood-filter">
+          <p id="filterLabel">気分で絞る（選ぶと、その気分の色と曲が出ます）</p>
+          <div class="chips" id="chips" role="group" aria-labelledby="filterLabel"></div>
+        </div>
+
+        <div class="combo" aria-live="polite">
+          <p class="mood-label" id="moodLabel"></p>
+          <h1 class="color-name serif" id="colorName"></h1>
+          <p class="hex mono" id="hex"></p>
+          <p class="codes mono" id="codes"></p>
+          <p class="vibe" id="vibe"></p>
+        </div>
+
+        <div class="track-card" id="trackCard">
+          <div class="track-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+            <div>
+              <p class="track-title" id="trackTitle"></p>
+              <p class="track-artist" id="trackArtist"></p>
+            </div>
+          </div>
+          <div class="track-actions">
+            <a class="btn btn-spotify" id="spotifyLink" href="#" target="_blank" rel="noreferrer">Spotifyで開く</a>
+            <button type="button" class="btn btn-outline" id="saveBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="saveHeart">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              </svg>
+              <span id="saveLabel">この組み合わせを保存</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-actions">
+          <button type="button" class="btn-draw" id="drawBtn">つぎの色と曲</button>
+          <button type="button" class="btn-ghost" id="copyHexBtn">HEXをコピー</button>
+          <button type="button" class="btn-ghost" id="copyComboBtn">組み合わせをコピー</button>
+        </div>
+        <p class="copy-note" id="copyNote" role="status"></p>
+
+        <div class="harmony">
+          <h2>この色と合う配色</h2>
+          <div class="swatches" id="swatches"></div>
+        </div>
+
+        <div class="history">
+          <h2>さっき引いた色</h2>
+          <div class="history-row" id="historyRow"></div>
+          <p class="history-empty" id="historyEmpty">引いた色がここに並びます。丸を押すと、その組み合わせに戻れます。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Collection ===== -->
+    <section class="below">
+      <div class="below-inner">
+        <div class="section-head">
+          <h2 class="serif">保存した組み合わせ</h2>
+          <div class="section-actions">
+            <button type="button" class="btn-plain" id="copyAllBtn" disabled>すべてコピー</button>
+            <button type="button" class="btn-plain" id="downloadBtn" disabled>テキストで書き出す</button>
+          </div>
+        </div>
+        <p class="section-note">コレクションはこのページを開いている間だけのものです。残したい組み合わせは、テキストで書き出して手元に置いてください。</p>
+        <p class="empty" id="favEmpty">まだ保存した組み合わせはありません。気に入った色と曲に出会ったら、色の画面の「この組み合わせを保存」から残せます。</p>
+        <ul class="fav-list" id="favList"></ul>
+
+        <!-- ===== Moods ===== -->
+        <div class="moods">
+          <h2 class="serif">気分のかたち</h2>
+          <p>色の明るさ・鮮やかさ・色相から、8つの気分のどれかに振り分けています。気分を押すと、その気分の色と曲を引けます。</p>
+          <ul class="mood-grid" id="moodGrid"></ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>楽曲はすべて実在の曲で、リンク先はSpotifyです。</p>
+      <p>色名は、色相とトーンから付けた詩的な名前です。</p>
+    </footer>
+
+    <script>
+      "use strict";
+
+      /* ===== Mood model (色のHSLから気分を決める) ===== */
+      var MOODS = {
+        pop_bright: { label: "あかるい・ポップ", vibe: "陽の光みたいに弾ける空気" },
+        chill:      { label: "しずか・チル",     vibe: "深呼吸したくなる静けさ" },
+        melancholy: { label: "ゆううつ・切ない", vibe: "雨上がりの窓辺みたいな切なさ" },
+        warm:       { label: "あたたかい",       vibe: "夕日の部屋みたいな温もり" },
+        cool:       { label: "つめたい・クール", vibe: "夜明け前の空気みたいな涼しさ" },
+        dreamy:     { label: "ゆめみる・ドリーミー", vibe: "まどろみの中みたいな浮遊感" },
+        energetic:  { label: "エネルギッシュ",   vibe: "走り出したくなる衝動" },
+        nostalgic:  { label: "ノスタルジック",   vibe: "古い写真みたいな懐かしさ" }
+      };
+      var MOOD_KEYS = Object.keys(MOODS);
+
+      function moodForColor(h, s, l) {
+        if (s < 0.18) return l < 0.3 ? "melancholy" : "chill";
+        if (l > 0.82) return "dreamy";
+        if (l < 0.25) {
+          if (h >= 200 && h < 290) return "cool";
+          if (h < 70 || h >= 320) return "melancholy";
+          return "cool";
+        }
+        if (h >= 15 && h < 55 && s < 0.45 && l >= 0.35 && l <= 0.68) return "nostalgic";
+        if (h < 15 || h >= 345) return s > 0.55 && l > 0.4 ? "energetic" : "warm";
+        if (h < 45) return s > 0.6 && l >= 0.45 && l <= 0.68 ? "pop_bright" : "warm";
+        if (h < 70) return s > 0.5 ? "pop_bright" : "warm";
+        if (h < 160) return s > 0.5 ? "pop_bright" : "chill";
+        if (h < 200) return s > 0.4 ? "cool" : "chill";
+        if (h < 260) return l < 0.55 ? "cool" : "dreamy";
+        if (h < 300) return "dreamy";
+        return l > 0.5 ? "pop_bright" : "dreamy";
+      }
+
+      function colorName(h, s, l) {
+        if (s < 0.08) {
+          if (l > 0.85) return "白磁の白";
+          if (l > 0.6) return "銀鼠";
+          if (l > 0.35) return "鼠色";
+          return "墨色";
+        }
+        var families = [
+          [15, "緋色"], [30, "柿色"], [45, "山吹色"], [60, "菜の花色"],
+          [80, "若芽色"], [110, "若竹色"], [140, "常磐色"], [170, "浅葱色"],
+          [200, "空色"], [230, "群青色"], [260, "藍色"], [290, "藤色"],
+          [315, "牡丹色"], [345, "紅梅色"], [361, "緋色"]
+        ];
+        var base = "緋色";
+        for (var i = 0; i < families.length; i++) {
+          if (h < families[i][0]) { base = families[i][1]; break; }
+        }
+        if (l > 0.78) return "淡い" + base;
+        if (l < 0.24) return "深い" + base;
+        if (s < 0.22) return "灰みの" + base;
+        if (s > 0.88) return "鮮やかな" + base;
+        return base;
+      }
+
+      function hslToRgb(h, s, l) {
+        var c = (1 - Math.abs(2 * l - 1)) * s;
+        var x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+        var m = l - c / 2;
+        var r = 0, g = 0, b = 0;
+        if (h < 60) { r = c; g = x; }
+        else if (h < 120) { r = x; g = c; }
+        else if (h < 180) { g = c; b = x; }
+        else if (h < 240) { g = x; b = c; }
+        else if (h < 300) { r = x; b = c; }
+        else { r = c; b = x; }
+        return {
+          r: Math.round((r + m) * 255),
+          g: Math.round((g + m) * 255),
+          b: Math.round((b + m) * 255)
+        };
+      }
+
+      function toHex(r, g, b) {
+        function part(n) { var s = n.toString(16).toUpperCase(); return s.length < 2 ? "0" + s : s; }
+        return "#" + part(r) + part(g) + part(b);
+      }
+
+      function textOn(hex) {
+        var r = parseInt(hex.slice(1, 3), 16) / 255;
+        var g = parseInt(hex.slice(3, 5), 16) / 255;
+        var b = parseInt(hex.slice(5, 7), 16) / 255;
+        var lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        return lum > 0.55 ? "#1c1917" : "#fdfaf3";
+      }
+
+      function fmtDuration(ms) {
+        if (ms == null) return null;
+        var total = Math.round(ms / 1000);
+        var sec = String(total % 60);
+        if (sec.length < 2) sec = "0" + sec;
+        return Math.floor(total / 60) + ":" + sec;
+      }
+
+      /* ===== Track pool (実在の楽曲のみ・Spotifyリンク付き) ===== */
+      var TRACKS = [{"m":"pop_bright","t":"愛包ダンスホール","a":"HIMEHINA","u":"https://open.spotify.com/track/0xgcNz442ZEz4djFVp1wWB","d":218244,"e":false},{"m":"pop_bright","t":"美人","a":"CHANMINA","u":"https://open.spotify.com/track/3t7mVfDiaN6YvosOLQn5Vy","d":160164,"e":true},{"m":"pop_bright","t":"シャッターチャンス","a":"After the Rain","u":"https://open.spotify.com/track/2uDecuWxcjvSEHLo53tNfj","d":245731,"e":false},{"m":"pop_bright","t":"クールじゃない？","a":"WurtS","u":"https://open.spotify.com/track/6hbTp1ujT5mShbTS6zCIu3","d":159566,"e":false},{"m":"pop_bright","t":"人造エネミー","a":"Jin","u":"https://open.spotify.com/track/04fVAsZy2S5eSoDXHoGSui","d":242733,"e":false},{"m":"pop_bright","t":"Flamingo","a":"Kero Kero Bonito","u":"https://open.spotify.com/track/34TufQ4EFzmDIFXJ3A8Yau","d":197528,"e":false},{"m":"pop_bright","t":"KURU KURU HARAJUKU","a":"Kyary Pamyu Pamyu","u":"https://open.spotify.com/track/1xxDroHAay4TicZmGoo0sU","d":257820,"e":false},{"m":"pop_bright","t":"Virtual Insanity - Remastered 2013","a":"Jamiroquai","u":"https://open.spotify.com/track/2Bxt2qamL6iu0XN0Td484J","d":340906,"e":false},{"m":"pop_bright","t":"Closer","a":"The Chainsmokers, Halsey","u":"https://open.spotify.com/track/7crMiinWx373rNBZBaVske","d":245506,"e":false},{"m":"pop_bright","t":"Crazy In Love (feat. JAŸ-Z)","a":"Beyoncé, JAŸ-Z","u":"https://open.spotify.com/track/0TwBtDAWpkpM3srywFVOV5","d":235933,"e":false},{"m":"pop_bright","t":"I Love It (feat. Charli XCX)","a":"Icona Pop, Charli xcx","u":"https://open.spotify.com/track/6HZ9VeI5IRFCNQLXhpF4bq","d":157152,"e":true},{"m":"pop_bright","t":"Lean On","a":"Major Lazer, DJ Snake, MØ, Diplo","u":"https://open.spotify.com/track/01aTsQoKoeXofSTvKuunzv","d":176561,"e":false},{"m":"warm","t":"ボーイフレンド","a":"aiko","u":"https://open.spotify.com/track/4PhuneEbBLABKm7SUXoxn7","d":286773,"e":false},{"m":"warm","t":"Ti Amo","a":"EXILE","u":"https://open.spotify.com/track/1Q7oFC1klezkeEsUUFU50p","d":371000,"e":false},{"m":"warm","t":"娑婆堕罵 -Shabadaba-","a":"RADWIMPS","u":"https://open.spotify.com/track/39WE2duYMF00oF7E6lLSSW","d":253433,"e":false},{"m":"warm","t":"桜の森","a":"Gen Hoshino","u":"https://open.spotify.com/track/7hjZPeA13HBpkkQw9Hzrqe","d":310333,"e":false},{"m":"warm","t":"Ain't That Easy","a":"D'Angelo","u":"https://open.spotify.com/track/2yx7XX9v7M6yhm2fBG7K3E","d":289026,"e":false},{"m":"warm","t":"Can't Take My Eyes Off of You - (I Love You Baby)","a":"Ms. Lauryn Hill","u":"https://open.spotify.com/track/2GFExyKXf9383tSRSrEHEt","d":221466,"e":false},{"m":"warm","t":"How Many Mics","a":"Fugees, Ms. Lauryn Hill, Wyclef Jean, Pras","u":"https://open.spotify.com/track/744EpSVAucany6CWpwTedz","d":268893,"e":false},{"m":"warm","t":"TIME IS OVER","a":"TOSHIKI HAYASHI(%C), BASI, Mamiko Suzuki","u":"https://open.spotify.com/track/5zSbuA8h7Zbs2sMY1Dr4dE","d":267426,"e":false},{"m":"warm","t":"いちご売れ","a":"Urbangarde","u":"https://open.spotify.com/track/77JfPySKIPbO7hsHEqYeFD","d":334386,"e":false},{"m":"warm","t":"小名浜","a":"鬼","u":"https://open.spotify.com/track/28msl0ftgBjBBwx2hMXpD9","d":260626,"e":false},{"m":"warm","t":"Iridescent","a":"Deko","u":"https://open.spotify.com/track/4XwvR96AEGLH6RTbyqODns","d":101160,"e":true},{"m":"warm","t":"Hide Behind My Disguise","a":"Cleffy","u":"https://open.spotify.com/track/1batC1bWWvxgfTekqh9sTl","d":203294,"e":false},{"m":"nostalgic","t":"歩み","a":"GReeeeN","u":"https://open.spotify.com/track/633FYbXWLcvLkGA8gNghzP","d":251946,"e":false},{"m":"nostalgic","t":"Bohemian Rhapsody","a":"Queen","u":"https://open.spotify.com/track/2JiDi0qAXsPwhPqA2qaKGt","d":354321,"e":false},{"m":"nostalgic","t":"Get Wild","a":"TM NETWORK","u":"https://open.spotify.com/track/1iHHWxUpPLZVxMync1e2s6","d":240466,"e":false},{"m":"nostalgic","t":"Exotic Dance - Yellow Magic Orchestra Mix","a":"Haruomi Hosono, YELLOW MAGIC ORCHESTRA","u":"https://open.spotify.com/track/2C35vWg4jtm5KcnyjIG31j","d":215613,"e":false},{"m":"nostalgic","t":"B-BOYブンガク","a":"SCHA DARA PARR","u":"https://open.spotify.com/track/7vF8479FDwqTSzy1QbfAlf","d":261946,"e":false},{"m":"nostalgic","t":"Big Poppa - 2005 Remaster","a":"The Notorious B.I.G.","u":"https://open.spotify.com/track/2g8HN35AnVGIk7B8yMucww","d":252746,"e":true},{"m":"nostalgic","t":"Changes","a":"2Pac, Talent","u":"https://open.spotify.com/track/00i2HU7TEzzftShjRrDSEF","d":268960,"e":true},{"m":"nostalgic","t":"エネの電脳紀行","a":"Jin","u":"https://open.spotify.com/track/0Yh34BjQDkbETnfUa3ubah","d":205040,"e":false},{"m":"nostalgic","t":"ファタール - Fatal","a":"GEMN, 中島健人, Tatsuya Kitani","u":"https://open.spotify.com/track/1Is6RUjCNWxIWK0SCBguuy","d":220520,"e":false},{"m":"nostalgic","t":"むちゃくちゃやんけ","a":"三木道三","u":"https://open.spotify.com/track/0ONSOtLJXvb2qi1cxI4ruw","d":230666,"e":false},{"m":"nostalgic","t":"神々の詩","a":"Himekami","u":"https://open.spotify.com/track/2k3BOLhAPUXIjIA6wIhYnr","d":207413,"e":false},{"m":"nostalgic","t":"Alive","a":"Pearl Jam","u":"https://open.spotify.com/track/1L94M3KIu7QluZe63g64rv","d":340974,"e":false},{"m":"chill","t":"Everything Needs Love (RE-NEW)","a":"Mondo Grosso, BoA","u":"https://open.spotify.com/track/4c6c0gt9QQNbkWDGgFM08r","d":287286,"e":false},{"m":"chill","t":"Freelance","a":"Toro y Moi","u":"https://open.spotify.com/track/1mt71aWdYMEvfZEx3q8CPI","d":225915,"e":false},{"m":"chill","t":"Zidane","a":"D.A.N.","u":"https://open.spotify.com/track/6D7eI24oGCMFyG51UBIyAD","d":249106,"e":false},{"m":"chill","t":"Music","a":"Cornelius","u":"https://open.spotify.com/track/5FWvsFbhSxoWnN8TICZVVf","d":292000,"e":false},{"m":"chill","t":"Luv (sic)","a":"Nujabes, Shing02","u":"https://open.spotify.com/track/6CjBwbllmgXm5VjmOl2WKk","d":289026,"e":false},{"m":"chill","t":"Merry Christmas Mr. Lawrence","a":"Ryuichi Sakamoto","u":"https://open.spotify.com/track/0JDB5rOWJiSDzi9UT4iwxT","d":287400,"e":false},{"m":"chill","t":"Synapse","a":"SIRUP","u":"https://open.spotify.com/track/0cxb4W9dNi9lGRHte5ZPdy","d":204687,"e":false},{"m":"chill","t":"Voyage (feat. JJJ, BIM)","a":"STUTS, JJJ, BIM","u":"https://open.spotify.com/track/1iZph085GeQVdl97QoeCZt","d":208800,"e":false},{"m":"chill","t":"I Fall In Love Too Easily","a":"Chet Baker","u":"https://open.spotify.com/track/0F845nujLVqCb0XMZCh5Pc","d":201440,"e":false},{"m":"chill","t":"Doomsday","a":"MF DOOM, Pebbles The Invisible Girl","u":"https://open.spotify.com/track/7EQvdUJqZ2i7SWvSB2VqGA","d":298053,"e":true},{"m":"chill","t":"Luv Deluxe","a":"NF Zessho, 18scott","u":"https://open.spotify.com/track/6OFrYwOwWOG4PuAKPwZ0pV","d":266199,"e":false},{"m":"chill","t":"Sleepwalker","a":"akiaura, LONOWN, STM","u":"https://open.spotify.com/track/1IPHnu3hVkawJMzkP97tcm","d":212000,"e":false},{"m":"energetic","t":"トムとジェリーとヘイターと私","a":"Creepy Nuts","u":"https://open.spotify.com/track/5h4LjodwIRu35AU0aDMoOj","d":149404,"e":false},{"m":"energetic","t":"患者A","a":"Ado","u":"https://open.spotify.com/track/4z9K084IMJ6zzo2K5g58sR","d":286805,"e":false},{"m":"energetic","t":"新世紀のラブソング","a":"ASIAN KUNG-FU GENERATION","u":"https://open.spotify.com/track/0U6MLwYotz5XrejU9SI2Bu","d":316840,"e":false},{"m":"energetic","t":"Flash!!!","a":"King Gnu","u":"https://open.spotify.com/track/4XkJ7N5iX7UKR1uuwVr7A6","d":162586,"e":false},{"m":"energetic","t":"American Idiot","a":"Green Day","u":"https://open.spotify.com/track/5RPYcnToWBhrZ8d5KqjAry","d":174689,"e":true},{"m":"energetic","t":"Bangarang (feat. Sirah)","a":"Skrillex, Sirah","u":"https://open.spotify.com/track/6VRhkROS2SZHGlp0pxndbJ","d":215253,"e":true},{"m":"energetic","t":"Animals","a":"Martin Garrix","u":"https://open.spotify.com/track/0A9mHc7oYUoCECqByV8cQR","d":304228,"e":false},{"m":"energetic","t":"Can't Stop - 2014 Remaster","a":"Red Hot Chili Peppers","u":"https://open.spotify.com/track/6ojiTSzyv2qPMWqyhUKAqz","d":268369,"e":false},{"m":"energetic","t":"Brianstorm","a":"Arctic Monkeys","u":"https://open.spotify.com/track/7f9I5WdyXm5q1XqnSYgQZb","d":172866,"e":false},{"m":"energetic","t":"Heart-Shaped Box - 2023 Remaster","a":"Nirvana","u":"https://open.spotify.com/track/2LKAB4VBxok5XPD4JVvyNX","d":280533,"e":false},{"m":"energetic","t":"CH4NGE - feat. KAFU","a":"Giga, 可不","u":"https://open.spotify.com/track/3ipGZWQ7Q64OA7SwFNVfy2","d":132032,"e":false},{"m":"energetic","t":"Get Ur Freak On","a":"Missy Elliott","u":"https://open.spotify.com/track/6zsk6uF3MxfIeHPlubKBvR","d":211120,"e":true},{"m":"cool","t":"GAME","a":"Perfume","u":"https://open.spotify.com/track/4Hf2krqt0lxWdThWNGim3o","d":306853,"e":false},{"m":"cool","t":"FRUITS CLiPPER","a":"CAPSULE","u":"https://open.spotify.com/track/3UVIXgGhhHgD7ufcu5GFuc","d":249160,"e":false},{"m":"cool","t":"夜の踊り子","a":"sakanaction","u":"https://open.spotify.com/track/6qB3lZIfnDC8TE2245NDtO","d":302920,"e":false},{"m":"cool","t":"Packet Hero","a":"Maretu","u":"https://open.spotify.com/track/5GQaOyGSPoC07JlrTGcMpi","d":278125,"e":false},{"m":"cool","t":"Yen Bloc","a":"Awich","u":"https://open.spotify.com/track/0FHtpPMsnQoxNUpsPhUoqp","d":143520,"e":true},{"m":"cool","t":"Born Slippy (Nuxx)","a":"Underworld","u":"https://open.spotify.com/track/7xQYVjs4wZNdCwO0EeAWMC","d":456480,"e":false},{"m":"cool","t":"Let Go","a":"Ark Patrol, Veronika Redd","u":"https://open.spotify.com/track/47ZktHjhbCcs7VNPsJTib5","d":248056,"e":false},{"m":"cool","t":"Deep Down Low","a":"Valentino Khan","u":"https://open.spotify.com/track/0JqwSXdgJu2H1RwHK58rnJ","d":190476,"e":false},{"m":"cool","t":"RAPTURE","a":"INTERWORLD","u":"https://open.spotify.com/track/3thB8qaxyKtLJ7ao1NpkRB","d":164577,"e":true},{"m":"cool","t":"Higher (feat. Tohji, gummyboy)","a":"Mall Boyz, Tohji, gummyboy","u":"https://open.spotify.com/track/5HkpiHbmgH87yJwIGlS6ye","d":184225,"e":true},{"m":"cool","t":"Blue","a":"PETZ, Jin Dogg","u":"https://open.spotify.com/track/7wqRMxTFC52SEUOkCVEBcB","d":190387,"e":false},{"m":"cool","t":"Asuka","a":"PIKASONIC","u":"https://open.spotify.com/track/2FA2uG0o20jp8fBSv82PBa","d":237244,"e":false},{"m":"dreamy","t":"Tek It","a":"Cafuné","u":"https://open.spotify.com/track/751srcHf5tUqcEa9pRCQwP","d":191823,"e":false},{"m":"dreamy","t":"LOVEずっきゅん","a":"Soutaiseiriron","u":"https://open.spotify.com/track/37zxV5H602LocaT7RRH6Kr","d":199293,"e":false},{"m":"dreamy","t":"yume no manimani","a":"Siinamota","u":"https://open.spotify.com/track/0nLKXss9qvh6ktklsGV9tG","d":296000,"e":false},{"m":"dreamy","t":"kaleidoscope (feat. 初音ミク)","a":"Kikuo, Hatsune Miku","u":"https://open.spotify.com/track/7xUsBqghHI269KfAFS9EX1","d":341816,"e":false},{"m":"dreamy","t":"POKKA POKKA","a":"Fishmans","u":"https://open.spotify.com/track/2diC2THH55uAw4GGpZQjwn","d":244640,"e":false},{"m":"dreamy","t":"Duvet","a":"bôa","u":"https://open.spotify.com/track/42qNWdLKCI41S4uzfamhFM","d":203600,"e":false},{"m":"dreamy","t":"D>E>A>T>H>M>E>T>A>L","a":"Panchiko","u":"https://open.spotify.com/track/0R7BWzdXe7BVtGgFV6jqay","d":261849,"e":false},{"m":"dreamy","t":"L$D","a":"A$AP Rocky","u":"https://open.spotify.com/track/4S7YHmlWwfwArgd8LfSPud","d":238314,"e":true},{"m":"dreamy","t":"Honey","a":"Caribou","u":"https://open.spotify.com/track/3tTTu8TSfKtDoPqQFytqPn","d":262827,"e":false},{"m":"dreamy","t":"Breathe (In the Air) - 2023 Remaster","a":"Pink Floyd","u":"https://open.spotify.com/track/0inB67IHflRVtb2pmnykz8","d":165906,"e":false},{"m":"dreamy","t":"Buttercup","a":"Jack Stauber","u":"https://open.spotify.com/track/2mlGPkAx4kwF8Df0GlScsC","d":208026,"e":false},{"m":"dreamy","t":"Dancing with your eyes closed","a":"Jane Remover","u":"https://open.spotify.com/track/1XD4K4CGAKTIBmFpvuaFru","d":230526,"e":true},{"m":"melancholy","t":"Re: Re: Love","a":"Seiko Oomori, Kazunobu Mineta","u":"https://open.spotify.com/track/2pgAa9UFMhUd5jnd6wUYgj","d":311146,"e":false},{"m":"melancholy","t":"社会の窓","a":"Creep Hyp","u":"https://open.spotify.com/track/42Nb21D2QsxTS3GbqxP7Yg","d":207645,"e":false},{"m":"melancholy","t":"不眠症","a":"syrup16g","u":"https://open.spotify.com/track/0A7ApEpSwDzZuLr9AROc5d","d":255026,"e":false},{"m":"melancholy","t":"ローラーコースター","a":"ART-SCHOOL","u":"https://open.spotify.com/track/1MawF4BREQdXfzLTO4IYfw","d":258613,"e":false},{"m":"melancholy","t":"Everything In Its Right Place","a":"Radiohead","u":"https://open.spotify.com/track/2kRFrWaLWiKq48YYVdGcm8","d":251426,"e":false},{"m":"melancholy","t":"上京タワー","a":"MOROHA","u":"https://open.spotify.com/track/7DWrCtuIkEbZOFUvCoYkEV","d":226933,"e":false},{"m":"melancholy","t":"answer","a":"Creep Hyp","u":"https://open.spotify.com/track/0njEc0zVH96FqOfvTk91zZ","d":203280,"e":false},{"m":"melancholy","t":"八方塞がり美人","a":"kusoiinkai","u":"https://open.spotify.com/track/3vT1Ij7SgX7s5jbJ3qE3az","d":189840,"e":false},{"m":"melancholy","t":"Life is Beautiful","a":"Lil Peep","u":"https://open.spotify.com/track/5rYpwP1dHWGVMrSZbTmt3e","d":207586,"e":true},{"m":"melancholy","t":"Jocelyn Flores","a":"XXXTENTACION","u":"https://open.spotify.com/track/7m9OqQk4RVRkw9JJdeAw96","d":119133,"e":true},{"m":"melancholy","t":"デッドアンドシーク","a":"Jin","u":"https://open.spotify.com/track/0lUjlRr0FzFMJzqSPmLe4H","d":205826,"e":false},{"m":"melancholy","t":"Cry","a":"アンと私","u":"https://open.spotify.com/track/2eIT3xbAeFqcuPZe4nCGiI","d":136888,"e":false}];
+
+      var byMood = {};
+      MOOD_KEYS.forEach(function (k) { byMood[k] = []; });
+      TRACKS.forEach(function (t) { if (byMood[t.m]) byMood[t.m].push(t); });
+
+      /* ===== State (このページを開いている間だけ) ===== */
+      var current = null;        // {hex,rgb,hsl,colorName,moodKey,track}
+      var filterMood = null;     // null = おまかせ
+      var favorites = [];        // saved combos
+      var historyList = [];      // drawn combos, newest first
+      var confirmDeleteIdx = null;
+      var lastUri = null;
+
+      function randomHSL() {
+        var h = Math.floor(Math.random() * 360);
+        var s = Math.random() < 0.15
+          ? 0.05 + Math.random() * 0.2
+          : 0.35 + Math.random() * 0.6;
+        var l = 0.25 + Math.random() * 0.55;
+        return { h: h, s: s, l: l };
+      }
+
+      function pickTrack(moodKey) {
+        var pool = byMood[moodKey];
+        if (!pool || pool.length === 0) pool = TRACKS;
+        var candidates = pool.filter(function (t) { return t.u !== lastUri; });
+        var usable = candidates.length > 0 ? candidates : pool;
+        return usable[Math.floor(Math.random() * usable.length)];
+      }
+
+      function makeCombo(targetMood) {
+        var hsl = randomHSL();
+        if (targetMood) {
+          for (var i = 0; i < 400; i++) {
+            if (moodForColor(hsl.h, hsl.s, hsl.l) === targetMood) break;
+            hsl = randomHSL();
+          }
+          if (moodForColor(hsl.h, hsl.s, hsl.l) !== targetMood) {
+            // フォールバック: その気分になりやすい帯から直接作る
+            hsl = fallbackHSL(targetMood);
+          }
+        }
+        var moodKey = moodForColor(hsl.h, hsl.s, hsl.l);
+        var rgb = hslToRgb(hsl.h, hsl.s, hsl.l);
+        return {
+          hex: toHex(rgb.r, rgb.g, rgb.b),
+          rgb: rgb,
+          hsl: { h: hsl.h, s: Math.round(hsl.s * 100), l: Math.round(hsl.l * 100) },
+          hslRaw: hsl,
+          colorName: colorName(hsl.h, hsl.s, hsl.l),
+          moodKey: moodKey,
+          track: pickTrack(moodKey)
+        };
+      }
+
+      function fallbackHSL(moodKey) {
+        function rnd(a, b) { return a + Math.random() * (b - a); }
+        switch (moodKey) {
+          case "pop_bright": return { h: Math.floor(rnd(35, 65)), s: rnd(0.65, 0.9), l: rnd(0.48, 0.65) };
+          case "chill": return { h: Math.floor(rnd(170, 199)), s: rnd(0.2, 0.38), l: rnd(0.4, 0.6) };
+          case "melancholy": return { h: Math.floor(rnd(0, 359)), s: rnd(0.05, 0.15), l: rnd(0.26, 0.29) };
+          case "warm": return { h: Math.floor(rnd(16, 44)), s: rnd(0.4, 0.55), l: rnd(0.4, 0.6) };
+          case "cool": return { h: Math.floor(rnd(185, 199)), s: rnd(0.5, 0.8), l: rnd(0.35, 0.6) };
+          case "dreamy": return { h: Math.floor(rnd(262, 298)), s: rnd(0.4, 0.7), l: rnd(0.45, 0.7) };
+          case "energetic": return { h: Math.floor(rnd(346, 359)), s: rnd(0.65, 0.9), l: rnd(0.45, 0.6) };
+          case "nostalgic": return { h: Math.floor(rnd(20, 50)), s: rnd(0.25, 0.42), l: rnd(0.4, 0.6) };
+          default: return randomHSL();
+        }
+      }
+
+      /* ===== DOM refs ===== */
+      function el(id) { return document.getElementById(id); }
+      var fieldEl = el("field"), chipsEl = el("chips"), swatchesEl = el("swatches"),
+        historyRowEl = el("historyRow"), favListEl = el("favList");
+
+      function comboText(c) {
+        var dur = fmtDuration(c.track.d);
+        return c.colorName + " " + c.hex +
+          "（" + MOODS[c.moodKey].label + "）\n" +
+          "♪ " + c.track.t + " — " + c.track.a + (dur ? "（" + dur + "）" : "") + "\n" +
+          c.track.u;
+      }
+
+      function copyText(text, note) {
+        function done() { el("copyNote").textContent = note; }
+        function fallback() {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed"; ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); done(); }
+          catch (e) { el("copyNote").textContent = "コピーできませんでした"; }
+          document.body.removeChild(ta);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, fallback);
+        } else { fallback(); }
+      }
+
+      /* ===== Render: main combo ===== */
+      function renderCombo(c) {
+        current = c;
+        lastUri = c.track.u;
+        var fg = textOn(c.hex);
+        var fgDim = fg === "#1c1917" ? "rgba(28,25,23,0.62)" : "rgba(253,250,243,0.72)";
+        fieldEl.style.backgroundColor = c.hex;
+        fieldEl.style.color = fg;
+        fieldEl.style.setProperty("--chip-bg", fg);
+        fieldEl.style.setProperty("--chip-fg", fg === "#1c1917" ? "#fdfaf3" : "#1c1917");
+
+        el("moodLabel").textContent = MOODS[c.moodKey].label;
+        el("moodLabel").style.color = fgDim;
+        el("colorName").textContent = c.colorName;
+        el("hex").textContent = c.hex;
+        var codesEl = el("codes");
+        codesEl.textContent = "RGB " + c.rgb.r + " · " + c.rgb.g + " · " + c.rgb.b +
+          "　HSL " + c.hsl.h + "° · " + c.hsl.s + "% · " + c.hsl.l + "%";
+        codesEl.style.color = fgDim;
+        el("vibe").textContent = MOODS[c.moodKey].vibe;
+
+        el("trackTitle").textContent = c.track.t;
+        if (c.track.e) {
+          var ex = document.createElement("span");
+          ex.className = "explicit"; ex.textContent = "E";
+          ex.title = "Explicit（露骨な表現を含む曲）";
+          el("trackTitle").appendChild(ex);
+        }
+        var dur = fmtDuration(c.track.d);
+        el("trackArtist").textContent = c.track.a + (dur ? "　·　" + dur : "");
+        el("spotifyLink").href = c.track.u;
+        el("spotifyLink").setAttribute("aria-label", c.track.t + " をSpotifyで開く");
+
+        var drawBtn = el("drawBtn");
+        drawBtn.style.backgroundColor = fg;
+        drawBtn.style.color = fg === "#1c1917" ? "#fdfaf3" : "#1c1917";
+
+        updateSaveBtn();
+        renderHarmony(c);
+        renderHistory();
+        el("copyNote").textContent = "";
+      }
+
+      function isSaved(c) {
+        return favorites.some(function (f) { return f.hex === c.hex && f.track.u === c.track.u; });
+      }
+
+      function updateSaveBtn() {
+        var saved = current && isSaved(current);
+        el("saveLabel").textContent = saved ? "保存しました" : "この組み合わせを保存";
+        el("saveBtn").disabled = !!saved;
+        el("saveHeart").setAttribute("fill", saved ? "currentColor" : "none");
+      }
+
+      /* ===== Render: harmony palette ===== */
+      function renderHarmony(c) {
+        var h = c.hslRaw.h, s = c.hslRaw.s, l = c.hslRaw.l;
+        var items = [
+          { role: "補色", h: (h + 180) % 360, s: s, l: l },
+          { role: "類似色", h: (h + 30) % 360, s: s, l: l },
+          { role: "類似色", h: (h + 330) % 360, s: s, l: l },
+          { role: "トライアド", h: (h + 120) % 360, s: s, l: l }
+        ];
+        swatchesEl.innerHTML = "";
+        items.forEach(function (it) {
+          var rgb = hslToRgb(it.h, it.s, it.l);
+          var hex = toHex(rgb.r, rgb.g, rgb.b);
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "swatch";
+          btn.setAttribute("aria-label", it.role + " " + hex + " をコピー");
+          var colorSpan = document.createElement("span");
+          colorSpan.className = "swatch-color";
+          colorSpan.style.backgroundColor = hex;
+          var meta = document.createElement("span");
+          meta.className = "swatch-meta";
+          var role = document.createElement("span");
+          role.className = "swatch-role"; role.textContent = it.role;
+          var hexSpan = document.createElement("span");
+          hexSpan.className = "swatch-hex mono"; hexSpan.textContent = hex;
+          meta.appendChild(role); meta.appendChild(hexSpan);
+          btn.appendChild(colorSpan); btn.appendChild(meta);
+          btn.addEventListener("click", function () {
+            copyText(hex, hex + " をコピーしました");
+          });
+          swatchesEl.appendChild(btn);
+        });
+      }
+
+      /* ===== Render: history ===== */
+      function renderHistory() {
+        historyRowEl.innerHTML = "";
+        el("historyEmpty").style.display = historyList.length > 1 ? "none" : "";
+        historyList.forEach(function (c, idx) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "history-dot";
+          btn.style.backgroundColor = c.hex;
+          btn.title = c.colorName + " " + c.hex;
+          btn.setAttribute("aria-label", c.colorName + " " + c.hex + " の組み合わせに戻る");
+          if (current && c.hex === current.hex && c.track.u === current.track.u) {
+            btn.setAttribute("aria-current", "true");
+          }
+          btn.addEventListener("click", function () { renderCombo(historyList[idx]); });
+          historyRowEl.appendChild(btn);
+        });
+      }
+
+      /* ===== Render: favorites ===== */
+      function renderFavorites() {
+        favListEl.innerHTML = "";
+        el("favEmpty").style.display = favorites.length === 0 ? "" : "none";
+        el("copyAllBtn").disabled = favorites.length === 0;
+        el("downloadBtn").disabled = favorites.length === 0;
+        favorites.forEach(function (f, idx) {
+          var li = document.createElement("li");
+          li.className = "fav";
+
+          var band = document.createElement("div");
+          band.className = "fav-band";
+          band.style.backgroundColor = f.hex;
+          band.style.color = textOn(f.hex);
+          var name = document.createElement("p");
+          name.className = "fav-name serif"; name.textContent = f.colorName;
+          var hexP = document.createElement("p");
+          hexP.className = "fav-hex mono"; hexP.textContent = f.hex;
+          band.appendChild(name); band.appendChild(hexP);
+
+          var body = document.createElement("div");
+          body.className = "fav-body";
+          var mood = document.createElement("p");
+          mood.className = "fav-mood"; mood.textContent = MOODS[f.moodKey].label;
+          var track = document.createElement("p");
+          track.className = "fav-track"; track.textContent = f.track.t;
+          var artist = document.createElement("p");
+          artist.className = "fav-artist";
+          var dur = fmtDuration(f.track.d);
+          artist.textContent = f.track.a + (dur ? "　·　" + dur : "");
+          body.appendChild(mood); body.appendChild(track); body.appendChild(artist);
+
+          var actions = document.createElement("div");
+          actions.className = "fav-actions";
+          var link = document.createElement("a");
+          link.className = "btn btn-spotify btn-small";
+          link.href = f.track.u; link.target = "_blank"; link.rel = "noreferrer";
+          link.textContent = "Spotify";
+          link.setAttribute("aria-label", f.track.t + " をSpotifyで開く");
+          actions.appendChild(link);
+
+          if (confirmDeleteIdx === idx) {
+            var del = document.createElement("button");
+            del.type = "button"; del.className = "btn btn-danger btn-small";
+            del.textContent = "消す";
+            del.addEventListener("click", function () {
+              favorites.splice(idx, 1);
+              confirmDeleteIdx = null;
+              renderFavorites(); updateSaveBtn();
+            });
+            var cancel = document.createElement("button");
+            cancel.type = "button"; cancel.className = "btn btn-outline btn-small";
+            cancel.textContent = "やめる";
+            cancel.addEventListener("click", function () {
+              confirmDeleteIdx = null; renderFavorites();
+            });
+            actions.appendChild(del); actions.appendChild(cancel);
+          } else {
+            var delBtn = document.createElement("button");
+            delBtn.type = "button"; delBtn.className = "btn btn-outline btn-small";
+            delBtn.textContent = "削除";
+            delBtn.setAttribute("aria-label", f.colorName + " の保存を削除");
+            delBtn.addEventListener("click", function () {
+              confirmDeleteIdx = idx; renderFavorites();
+            });
+            actions.appendChild(delBtn);
+          }
+          body.appendChild(actions);
+          li.appendChild(band); li.appendChild(body);
+          favListEl.appendChild(li);
+        });
+      }
+
+      /* ===== Filter chips & mood grid ===== */
+      function renderChips() {
+        chipsEl.innerHTML = "";
+        var all = document.createElement("button");
+        all.type = "button"; all.className = "chip"; all.textContent = "おまかせ";
+        all.setAttribute("aria-pressed", filterMood === null ? "true" : "false");
+        all.addEventListener("click", function () { setFilter(null); });
+        chipsEl.appendChild(all);
+        MOOD_KEYS.forEach(function (k) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "chip"; b.textContent = MOODS[k].label;
+          b.setAttribute("aria-pressed", filterMood === k ? "true" : "false");
+          b.addEventListener("click", function () { setFilter(k); });
+          chipsEl.appendChild(b);
+        });
+      }
+
+      function setFilter(k) {
+        filterMood = k;
+        renderChips();
+        draw();
+      }
+
+      function renderMoodGrid() {
+        var grid = el("moodGrid");
+        grid.innerHTML = "";
+        MOOD_KEYS.forEach(function (k) {
+          var li = document.createElement("li");
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "mood-cell";
+          var label = document.createElement("span");
+          label.className = "m-label"; label.textContent = MOODS[k].label;
+          var vibe = document.createElement("span");
+          vibe.className = "m-vibe"; vibe.textContent = MOODS[k].vibe;
+          var count = document.createElement("span");
+          count.className = "m-count"; count.textContent = byMood[k].length + "曲";
+          b.appendChild(label); b.appendChild(vibe); b.appendChild(count);
+          b.addEventListener("click", function () {
+            setFilter(k);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+          li.appendChild(b);
+          grid.appendChild(li);
+        });
+      }
+
+      /* ===== Draw & events ===== */
+      function draw() {
+        var c = makeCombo(filterMood);
+        historyList.unshift(c);
+        if (historyList.length > 12) historyList.length = 12;
+        renderCombo(c);
+      }
+
+      el("drawBtn").addEventListener("click", draw);
+      el("copyHexBtn").addEventListener("click", function () {
+        if (current) copyText(current.hex, current.hex + " をコピーしました");
+      });
+      el("copyComboBtn").addEventListener("click", function () {
+        if (current) copyText(comboText(current), "組み合わせをコピーしました");
+      });
+      el("saveBtn").addEventListener("click", function () {
+        if (!current || isSaved(current)) return;
+        favorites.unshift({
+          hex: current.hex, colorName: current.colorName,
+          moodKey: current.moodKey, track: current.track
+        });
+        renderFavorites(); updateSaveBtn();
+      });
+      el("copyAllBtn").addEventListener("click", function () {
+        if (favorites.length === 0) return;
+        copyText(favorites.map(comboText).join("\n\n"), "保存した組み合わせをすべてコピーしました");
+      });
+      el("downloadBtn").addEventListener("click", function () {
+        if (favorites.length === 0) return;
+        var text = "保存した組み合わせ\n\n" + favorites.map(comboText).join("\n\n") + "\n";
+        var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = "color-track-collection.txt";
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      });
+
+      /* ===== Init ===== */
+      el("poolNote").textContent = "全" + TRACKS.length + "曲から";
+      renderChips();
+      renderMoodGrid();
+      renderFavorites();
+      draw();
+    </script>
+  </body>
+</html>
