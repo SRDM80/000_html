@@ -206,6 +206,20 @@
     box-shadow:0 8px 18px rgba(27,111,192,.25);
   }
 
+  /* ============ about への導線 ============ */
+  .about-link{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.1rem 1.4rem;
+    color:var(--text-main); text-decoration:none;
+    font-size:13px; letter-spacing:.14em;
+    transition:background .18s, color .18s, box-shadow .18s;
+  }
+  .about-link:hover{
+    background:linear-gradient(135deg, var(--blue), var(--blue-deep));
+    color:#fff;
+  }
+  .about-link .arrow{ font-family:var(--font-mono); }
+
   /* ============ フッター ============ */
   .footer{
     font-size:10px; color:var(--text-hint);
@@ -303,6 +317,13 @@
         <span class="work-badge mono">muse</span>
       </div>
     </div>
+  </section>
+
+
+  <!-- ============== about ============== -->
+  <section>
+    <p class="label">about</p>
+    <a class="about-link card" href="about.html"><span>自己紹介 — プロフ帳</span><span class="arrow">→</span></a>
   </section>
 
 
