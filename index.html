@@ -11,34 +11,43 @@
 
 <style>
   /* =========================================================
-     1. 変数（色・フォント・余白）— ここを変えれば全体に反映される
+     リサージュの水色を基調にした、静かで洗練されたデザイン
+     色は画像の青グラデーションから取っている
   ========================================================= */
   :root{
-    --bg:        #f5f4f0;
+    --bg:        #f2f8fc;
     --surface:   #ffffff;
-    --border:    rgba(0,0,0,.10);
-    --border-em: rgba(0,0,0,.20);
-    --text-main: #1a1a18;
-    --text-sub:  #6b6b66;
-    --text-hint: #a8a8a3;
+    --blue:      #35a6f5;
+    --blue-deep: #1b6fc0;
+    --blue-ink:  #123a5c;
+    --blue-pale: #e8f4fd;
+    --border:    rgba(53,166,245,.18);
+    --border-em: rgba(53,166,245,.38);
+
+    --text-main: #16324a;
+    --text-sub:  #5b7a94;
+    --text-hint: #9dbfd8;
 
     --font-mono: 'Space Mono', monospace;
     --font-ja:   'Zen Kaku Gothic New', sans-serif;
 
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    --radius-sm: 999px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
 
-    --gap: 1.5rem; /* セクション間の間隔 */
+    --gap: 2rem;
+    --shadow: 0 18px 40px rgba(27,111,192,.10);
   }
 
   *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
 
+  ::selection{ background:#cdeafd; }
+
   html{
-    background:var(--bg);
+    background:linear-gradient(180deg,#eaf5fc 0%,#f6fbfe 45%,#fdfefe 100%) fixed;
     color:var(--text-main);
     font-family:var(--font-ja);
-    line-height:1.7;
+    line-height:1.8;
     -webkit-font-smoothing:antialiased;
   }
 
@@ -46,7 +55,7 @@
     min-height:100vh;
     display:flex;
     justify-content:center;
-    padding:3rem 1.25rem 5rem;
+    padding:3.5rem 1.25rem 5rem;
   }
 
   .site{
@@ -57,177 +66,159 @@
     gap:var(--gap);
   }
 
-  /* =========================================================
-     2. 共通パーツ（カード・ラベル・モノフォント）
-     → 新しいセクションを足すときはこれらのクラスを使い回す
-  ========================================================= */
+  /* ============ 共通パーツ ============ */
   .card{
     background:var(--surface);
-    border:.5px solid var(--border-em);
+    border:1px solid var(--border);
     border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
   }
 
-  .label{ /* セクション見出し（works / skills / links など） */
+  .label{ /* セクション見出し：細いグラデーションの線を添える */
+    display:flex; align-items:center; gap:.9rem;
     font-family:var(--font-mono);
-    font-size:10px;
-    color:var(--text-hint);
-    letter-spacing:.14em;
+    font-size:11px;
+    color:var(--blue);
+    letter-spacing:.32em;
     text-transform:uppercase;
-    margin-bottom:.75rem;
+    margin-bottom:1rem;
+  }
+  .label::after{
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg, var(--border-em), transparent);
   }
 
   .mono{ font-family:var(--font-mono); }
 
-  /* =========================================================
-     3. ヘッダー
-  ========================================================= */
-  .header{
-    position:relative;
-    padding:2rem 1.75rem 1.75rem;
-    overflow:hidden;
-  }
+  a:focus-visible{ outline:2px solid var(--blue); outline-offset:3px; border-radius:4px; }
 
-  .header::before{ /* ノイズテクスチャ */
-    content:'';
-    position:absolute; inset:0;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='%23888' opacity='0.07'/%3E%3C/svg%3E");
-    pointer-events:none;
+  /* ============ ヘッダー ============ */
+  .header{
+    padding:2.75rem 2.25rem 2.5rem;
+    text-align:center;
   }
 
   .header-tag{
-    font-size:11px; color:var(--text-hint);
-    letter-spacing:.08em; margin-bottom:.75rem;
+    font-size:11px; color:var(--blue);
+    letter-spacing:.34em; margin-bottom:1.5rem;
   }
 
   .header-image{
     display:block;
-    width:100%;
+    width:100%; max-width:400px;
     height:auto;
-    border-radius:var(--radius-md);
-    margin-bottom:1.25rem;
+    margin:0 auto 1.75rem;
   }
 
   .header-name{
-    font-size:26px; font-weight:400;
-    letter-spacing:-.02em; line-height:1.15;
+    font-size:42px; font-weight:400;
+    letter-spacing:.22em; text-indent:.22em;
+    line-height:1.1; color:var(--blue-ink);
   }
 
   .header-name-sub{
-    font-size:13px; font-style:italic;
-    color:var(--text-hint); letter-spacing:.04em;
-    margin-top:.3rem;
+    font-size:11px;
+    color:var(--blue-deep);
+    letter-spacing:.38em; text-indent:.38em;
+    text-transform:uppercase;
+    margin-top:.6rem;
   }
 
   .header-manifesto{
-    margin-top:1.25rem; padding-top:1.25rem;
-    border-top:.5px solid var(--border);
-    font-size:13px; color:var(--text-sub); line-height:1.8;
+    position:relative;
+    margin-top:1.75rem; padding-top:1.75rem;
+    font-size:13px; color:var(--text-sub); line-height:2;
   }
-
+  .header-manifesto::before{ /* 中央の短いグラデーション線 */
+    content:''; position:absolute; top:0; left:50%;
+    transform:translateX(-50%);
+    width:48px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, var(--blue), var(--blue-deep));
+  }
   .header-manifesto strong{ color:var(--text-main); font-weight:500; }
 
   .header-keywords{
-    margin-top:.6rem; font-size:10px;
-    color:var(--text-hint); letter-spacing:.06em;
+    margin-top:.9rem; font-size:10px;
+    color:var(--text-hint); letter-spacing:.18em;
   }
 
-  /* =========================================================
-     4. works — 1作品 = .work-item を1ブロックコピーして追加
-  ========================================================= */
-  .work-list{ border-top:.5px solid var(--border); }
+  /* ============ works ============ */
+  .work-list{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    padding:.4rem 1.4rem;
+  }
 
   .work-item{
-    display:flex; align-items:flex-start; gap:1rem;
-    padding:1rem 0;
-    border-bottom:.5px solid var(--border);
+    display:flex; align-items:center; gap:1rem;
+    padding:1.05rem .35rem;
+    border-bottom:1px solid var(--border);
+    border-radius:var(--radius-md);
+    transition:background .18s;
   }
+  .work-item:last-child{ border-bottom:none; }
+  .work-item:hover{ background:linear-gradient(90deg, var(--blue-pale), transparent); }
 
   .work-num{
-    font-size:11px; color:var(--text-hint);
-    min-width:22px; padding-top:2px;
+    font-size:11px; color:var(--blue);
+    letter-spacing:.08em;
+    min-width:24px;
   }
 
   .work-meta{ flex:1; }
 
-  .work-title{ font-size:14px; font-weight:500; margin-bottom:3px; }
-  .work-title a{ color:inherit; text-decoration:none; }
-  .work-title a:hover{ text-decoration:underline; }
+  .work-title{ font-size:14px; font-weight:500; letter-spacing:.04em; margin-bottom:2px; }
+  .work-title a{ color:inherit; text-decoration:none; transition:color .15s; }
+  .work-title a:hover{ color:var(--blue-deep); }
 
-  .work-desc{ font-size:12px; color:var(--text-sub); }
+  .work-desc{ font-size:12px; color:var(--text-sub); letter-spacing:.03em; }
 
   .work-badge{
-    font-size:10px;
-    background:var(--bg);
-    border:.5px solid var(--border);
+    font-size:10px; letter-spacing:.06em;
+    background:var(--blue-pale);
+    border:1px solid var(--border);
     border-radius:var(--radius-sm);
-    padding:3px 7px;
-    color:var(--text-sub);
+    padding:3px 10px;
+    color:var(--blue-deep);
     white-space:nowrap;
-    align-self:center;
   }
 
-  /* =========================================================
-     5. skills — 1項目 = .skill-card を1ブロックコピーして追加
-        width:〇% を変えるだけで習熟度バーが変わる
-  ========================================================= */
-  .skills-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(130px,1fr));
-    gap:8px;
-  }
-
-  .skill-card{
-    background:var(--surface);
-    border:.5px solid var(--border);
-    border-radius:var(--radius-md);
-    padding:.75rem 1rem;
-  }
-
-  .skill-name{ font-size:11px; margin-bottom:8px; }
-
-  .skill-bar{
-    height:2px; background:var(--border);
-    border-radius:2px; overflow:hidden;
-  }
-
-  .skill-fill{
-    height:100%; background:var(--text-sub); border-radius:2px;
-  }
-
-  /* =========================================================
-     6. links — 1項目 = .link-pill を1ブロックコピーして追加
-  ========================================================= */
+  /* ============ links ============ */
   .links{ display:flex; flex-wrap:wrap; gap:8px; }
 
   .link-pill{
-    font-size:11px;
-    padding:6px 14px;
-    border:.5px solid var(--border-em);
-    border-radius:100px;
+    font-size:11px; letter-spacing:.06em;
+    padding:7px 16px;
+    border:1px solid var(--border-em);
+    border-radius:var(--radius-sm);
     color:var(--text-sub);
-    background:transparent;
+    background:var(--surface);
     text-decoration:none;
     display:flex; align-items:center; gap:6px;
-    transition:background .15s, color .15s;
+    transition:background .18s, color .18s, transform .18s, box-shadow .18s;
+  }
+  .link-pill:hover{
+    background:linear-gradient(135deg, var(--blue), var(--blue-deep));
+    color:#fff; border-color:transparent;
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(27,111,192,.25);
   }
 
-  .link-pill:hover{ background:var(--surface); color:var(--text-main); }
-
-  /* =========================================================
-     7. フッター
-  ========================================================= */
+  /* ============ フッター ============ */
   .footer{
     font-size:10px; color:var(--text-hint);
-    line-height:2; letter-spacing:.05em;
+    text-align:center;
+    line-height:2; letter-spacing:.18em;
   }
 
-  /* =========================================================
-     8. レスポンシブ / アクセシビリティ
-  ========================================================= */
+  /* ============ レスポンシブ / アクセシビリティ ============ */
   @media (max-width:480px){
-    body{ padding:2rem 1rem 4rem; }
-    .header{ padding:1.5rem 1.25rem; }
-    .header-name{ font-size:22px; }
+    body{ padding:2.25rem 1rem 4rem; }
+    .header{ padding:2rem 1.25rem 1.75rem; }
+    .header-name{ font-size:32px; }
+    .work-list{ padding:.3rem 1rem; }
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -288,10 +279,8 @@
         </div>
         <span class="work-badge mono">mp4</span>
       </div>
-    </div>
-  </section>
 
-        <div class="work-item">
+      <div class="work-item">
         <span class="work-num mono">03</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/000_html/star.html" target="_blank" rel="noopener">✴︎</a></p>
@@ -299,10 +288,8 @@
         </div>
         <span class="work-badge mono">html/CSS</span>
       </div>
-    </div>
-  </section>
 
-  <div class="work-item">
+      <div class="work-item">
         <span class="work-num mono">04</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/000_html/testyumekawa.html" target="_blank" rel="noopener">4989</a></p>
@@ -310,39 +297,14 @@
         </div>
         <span class="work-badge mono">html/CSS</span>
       </div>
-    </div>
-  </section>
 
-  <div class="work-item">
+      <div class="work-item">
         <span class="work-num mono">05</span>
         <div class="work-meta">
           <p class="work-title"><a href="https://srdm80.github.io/000_html/colorsong.html" target="_blank" rel="noopener">カラーコードと楽曲</a></p>
           <p class="work-desc">site 5 — GitHub Pages</p>
         </div>
         <span class="work-badge mono">muse</span>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============== skills ==============
-       width:〇% を変えるだけで習熟度バーが変わる
-  ===================================== -->
-  <section>
-    <p class="label">skills</p>
-
-    <div class="skills-grid">
-      <div class="skill-card">
-        <p class="skill-name mono">HTML / CSS</p>
-        <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
-      </div>
-      <div class="skill-card">
-        <p class="skill-name mono">JavaScript</p>
-        <div class="skill-bar"><div class="skill-fill" style="width:20%"></div></div>
-      </div>
-      <div class="skill-card">
-        <p class="skill-name mono">Java</p>
-        <div class="skill-bar"><div class="skill-fill" style="width:50%"></div></div>
       </div>
     </div>
   </section>
